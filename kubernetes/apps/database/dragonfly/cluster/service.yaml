@@ -4,7 +4,7 @@ kind: Service
 metadata:
   name: dragonfly-lb
   annotations:
-    # external-dns.alpha.kubernetes.io/hostname: redis.kinzoku.dev
+    external-dns.alpha.kubernetes.io/hostname: redis.kinzoku.dev
     io.cilium/lb-ipam-ips: 192.168.40.28
 spec:
   type: LoadBalancer
