@@ -1,0 +1,19 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dragonfly-lb
+  annotations:
+    # external-dns.alpha.kubernetes.io/hostname: redis.kinzoku.dev
+    io.cilium/lb-ipam-ips: 192.168.40.28
+spec:
+  type: LoadBalancer
+  ports:
+    - name: redis
+      port: 6379
+      protocol: TCP
+      targetPort: 6379
+  selector:
+    app.kubernetes.io/name: dragonfly
+    app: dragonfly
+    role: master
