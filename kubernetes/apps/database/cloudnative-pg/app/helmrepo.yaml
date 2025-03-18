@@ -10,6 +10,6 @@ spec:
     operation: copy
   ref:
     tag: 0.23.2
-  url: oci://cloudnative-pg.github.io/charts
+  url: oci://ghcr.io/cloudnative-pg/charts/cloudnative-pg
   verify:
     provider: cosign
