@@ -1,0 +1,269 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2beta2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: thanos
+spec:
+  interval: 30m
+  timeout: 15m
+  chartRef:
+    kind: OCIRepository
+    name: thanos
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      strategy: rollback
+      retries: 3
+  dependsOn:
+    - name: openebs
+      namespace: openebs-system
+  valuesFrom:
+    - targetPath: objstoreConfig.config.access_key
+      kind: Secret
+      name: thanos-secret
+      valuesKey: AWS_ACCESS_KEY_ID
+    - targetPath: objstoreConfig.config.secret_key
+      kind: Secret
+      name: thanos-secret
+      valuesKey: AWS_SECRET_ACCESS_KEY
+  values:
+    image:
+      registry: quay.io
+      repository: thanos/thanos
+      tag: v0.37.2
+    objstoreConfig:
+      type: s3
+      config:
+        bucket: thanos
+        endpoint: minio.default.svc.cluster.local:9000
+        region: "us-east-1"
+        insecure: true
+    queryFrontend:
+      enabled: true
+      replicaCount: 2
+      podAntiAffinityPreset: hard
+      ingress:
+        enabled: true
+        ingressClassName: internal
+        annotations:
+          nginx.ingress.kubernetes.io/whitelist-source-range: |
+            10.0.0.0/8,172.16.0.0/12,192.168.0.0/16
+          hajimari.io/enable: "false"
+        hostname: &host thanos-query-frontend.kinzoku.dev
+        tls: true
+        extraTls:
+          - hosts:
+              - *host
+    query:
+      enabled: true
+      replicaCount: 2
+      podAntiAffinityPreset: hard
+      replicaLabel: ["__replica__"] # must match with kube-prometheus-stack value `.prometheus.prometheusSpec.replicaExternalLabelName`
+      ingress:
+        enabled: true
+        ingressClassName: internal
+        annotations:
+          nginx.ingress.kubernetes.io/whitelist-source-range: |
+            10.0.0.0/8,172.16.0.0/12,192.168.0.0/16
+          hajimari.io/enable: "false"
+        hostname: &host thanos-query.kinzoku.dev
+        tls: true
+        extraTls:
+          - hosts:
+              - *host
+    bucketweb:
+      enabled: true
+      replicaCount: 2
+      podAntiAffinityPreset: hard
+      ingress:
+        enabled: true
+        ingressClassName: internal
+        annotations:
+          nginx.ingress.kubernetes.io/whitelist-source-range: |
+            10.0.0.0/8,172.16.0.0/12,192.168.0.0/16
+          hajimari.io/enable: "false"
+        hostname: &host thanos-bucketweb.kinzoku.dev
+        tls: true
+        extraTls:
+          - hosts:
+              - *host
+    compactor:
+      enabled: true
+      extraFlags: ["--compact.concurrency", "4", "--delete-delay", "30m"]
+      retentionResolutionRaw: 14d
+      retentionResolution5m: 14d
+      retentionResolution1h: 14d
+      ingress:
+        enabled: true
+        ingressClassName: internal
+        annotations:
+          nginx.ingress.kubernetes.io/whitelist-source-range: |
+            10.0.0.0/8,172.16.0.0/12,192.168.0.0/16
+          hajimari.io/enable: "false"
+        hostname: &host thanos-compactor.kinzoku.dev
+        tls: true
+        extraTls:
+          - hosts:
+              - *host
+      persistence:
+        enabled: true
+        storageClass: openebs-hostpath
+        size: 20Gi
+    storegateway:
+      enabled: true
+      replicaCount: 2
+      podAntiAffinityPreset: hard
+      ingress:
+        enabled: true
+        ingressClassName: internal
+        annotations:
+          nginx.ingress.kubernetes.io/whitelist-source-range: |
+            10.0.0.0/8,172.16.0.0/12,192.168.0.0/16
+          hajimari.io/enable: "false"
+        hostname: &host thanos-storegateway.kinzoku.dev
+        tls: true
+        extraTls:
+          - hosts:
+              - *host
+      persistence:
+        enabled: true
+        storageClass: openebs-hostpath
+        size: 20Gi
+    ruler:
+      enabled: true
+      replicaCount: 2
+      replicaLabel: __replica__
+      podAntiAffinityPreset: hard
+      dnsDiscovery:
+        enabled: true
+      alertmanagers: ["http://alertmanager-operated.observability.svc.cluster.local:9093"]
+      extraFlags: ["--web.prefix-header=X-Forwarded-Prefix"]
+      config: |-
+        groups:
+          - name: "PrometheusWatcher"
+            rules:
+              - alert: "PrometheusDown"
+                expr: absent(up{job="kube-prometheus-stack-prometheus"})
+      ingress:
+        enabled: true
+        ingressClassName: internal
+        annotations:
+          nginx.ingress.kubernetes.io/whitelist-source-range: |
+            10.0.0.0/8,172.16.0.0/12,192.168.0.0/16
+          hajimari.io/enable: "false"
+        hostname: &host thanos-ruler.kinzoku.dev
+        tls: true
+        extraTls:
+          - hosts:
+              - *host
+      persistence:
+        enabled: true
+        storageClass: openebs-hostpath
+        size: 20Gi
+    receive:
+      enabled: true
+      replicaCount: 2
+      replicaLabel: __replica__
+      extraFlags: ["--receive.hashrings-algorithm", "ketama"]
+      ingress:
+        enabled: true
+        ingressClassName: internal
+        annotations:
+          nginx.ingress.kubernetes.io/whitelist-source-range: |
+            10.0.0.0/8,172.16.0.0/12,192.168.0.0/16
+          hajimari.io/enable: "false"
+        hostname: &host thanos-receive.kinzoku.dev
+        tls: true
+        extraTls:
+          - hosts:
+              - *host
+      persistence:
+        enabled: true
+        storageClass: openebs-hostpath
+        size: 20Gi
+    metrics:
+      enabled: true
+      serviceMonitor:
+        enabled: true
+
+    # additionalEndpoints:
+    #   - dnssrv+_grpc._tcp.prometheus-thanos-discovery.observability.svc.cluster.local
+    # additionalReplicaLabels: ["__replica__"]
+    # serviceMonitor:
+    #   enabled: true
+    # compact:
+    #   enabled: true
+    #   extraArgs:
+    #     - --compact.concurrency=4
+    #     - --delete-delay=30m
+    #     - --retention.resolution-raw=14d
+    #     - --retention.resolution-5m=30d
+    #     - --retention.resolution-1h=60d
+    #   persistence: &persistence
+    #     enabled: true
+    #     storageClass: openebs-hostpath
+    #     size: 10Gi
+    # query:
+    #   replicas: 2
+    #   extraArgs: ["--alert.query-url=https://thanos.kinzoku.dev"]
+    #   ingress:
+    #     enabled: true
+    #     ingressClassName: internal
+    #     annotations:
+    #       nginx.ingress.kubernetes.io/whitelist-source-range: |
+    #         10.0.0.0/8,172.16.0.0/12,192.168.0.0/16
+    #     hosts:
+    #       - thanos-query.kinzoku.dev
+    # queryFrontend:
+    #   enabled: true
+    #   replicas: 2
+    #   extraEnv: &extraEnv
+    #     - name: THANOS_CACHE_CONFIG
+    #       valueFrom:
+    #         configMapKeyRef:
+    #           name: &configMap thanos-cache-configmap
+    #           key: cache.yaml
+    #   extraArgs: ["--query-range.response-cache-config=$(THANOS_CACHE_CONFIG)"]
+    #   ingress:
+    #     enabled: true
+    #     ingressClassName: internal
+    #     annotations:
+    #       nginx.ingress.kubernetes.io/whitelist-source-range: |
+    #         10.0.0.0/8,172.16.0.0/12,192.168.0.0/16
+    #     hosts:
+    #       - thanos-query-frontend.kinzoku.dev
+    #   podAnnotations: &podAnnotations
+    #     configmap.reloader.stakater.com/reload: *configMap
+    # rule:
+    #   enabled: true
+    #   replicas: 2
+    #   extraArgs: ["--web.prefix-header=X-Forwarded-Prefix"]
+    #   alertmanagersConfig:
+    #     value: |-
+    #       alertmanagers:
+    #         - api_version: v2
+    #           static_configs:
+    #             - dnssrv+_http-web._tcp.alertmanager-operated.observability.svc.cluster.local
+    #   rules:
+    #     value: |-
+    #       groups:
+    #         - name: PrometheusWatcher
+    #           rules:
+    #             - alert: PrometheusDown
+    #               annotations:
+    #                 summary: A Prometheus has disappeared from Prometheus target discovery
+    #               expr: absent(up{job="kube-prometheus-stack-prometheus"})
+    #               for: 5m
+    #               labels:
+    #                 severity: critical
+    #   persistence: *persistence
+    # storeGateway:
+    #   replicas: 2
+    #   extraEnv: *extraEnv
+    #   extraArgs: ["--index-cache.config=$(THANOS_CACHE_CONFIG)"]
+    #   persistence: *persistence
+    #   podAnnotations: *podAnnotations
