@@ -31,6 +31,9 @@ spec:
       name: thanos-secret
       valuesKey: AWS_SECRET_ACCESS_KEY
   values:
+    global:
+      security:
+        allowInsecureImages: true
     image:
       registry: quay.io
       repository: thanos/thanos
