@@ -11,3 +11,4 @@ resources:
   - ./glauth/ks.yaml
   - ./smtp-relay/ks.yaml
   - ./authelia/ks.yaml
+  - ./minio/ks.yaml

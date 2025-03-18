@@ -1,0 +1,118 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: minio
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      strategy: rollback
+      retries: 3
+  values:
+    controllers:
+      minio:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          app:
+            image:
+              repository: quay.io/minio/minio
+              tag: RELEASE.2025-03-12T18-04-18Z@sha256:46b3009bf7041eefbd90bd0d2b38c6ddc24d20a35d609551a1802c558c1c958f
+            env:
+              MINIO_API_CORS_ALLOW_ORIGIN: https://minio.kinzoku.dev,https://s3.kinzoku.dev
+              MINIO_BROWSER_REDIRECT_URL: https://minio.kinzoku.dev
+              # MINIO_PROMETHEUS_JOB_ID: minio
+              # MINIO_PROMETHEUS_URL: https://prometheus.kinzoku.dev
+              # MINIO_PROMETHEUS_AUTH_TYPE: public
+              MINIO_SERVER_URL: https://s3.kinzoku.dev
+              MINIO_STORAGE_CLASS_RRS: EC:0
+              MINIO_STORAGE_CLASS_STANDARD: EC:0
+              MINIO_UPDATE: "off"
+            envFrom:
+              - secretRef:
+                  name: minio-secret
+            args: ["server", "/data", "--console-address", ":9001"]
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /minio/health/live
+                    port: 9000
+                  initialDelaySeconds: 30
+                  periodSeconds: 30
+                  timeoutSeconds: 10
+                  failureThreshold: 6
+              readiness: *probes
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities: { drop: ["ALL"] }
+            resources:
+              requests:
+                cpu: 100m
+              limits:
+                memory: 2Gi
+    defaultPodOptions:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 568
+        runAsGroup: 568
+        fsGroup: 568
+        fsGroupChangePolicy: OnRootMismatch
+        supplementalGroups: [10000]
+        seccompProfile: { type: RuntimeDefault }
+    service:
+      app:
+        controller: minio
+        type: LoadBalancer
+        annotations:
+          io.cilium/lb-ipam-ips: 192.168.40.17
+        ports:
+          http:
+            port: 9001
+          s3:
+            port: 9000
+    serviceMonitor:
+      app:
+        serviceName: minio
+        endpoints:
+          - port: s3
+            scheme: http
+            path: /minio/v2/metrics/cluster
+            interval: 1m
+            scrapeTimeout: 10s
+    ingress:
+      app:
+        annotations:
+          external-dns.alpha.kubernetes.io/target: internal.kinzoku.dev
+        className: internal
+        hosts:
+          - host: "{{ .Release.Name }}.kinzoku.dev"
+            paths:
+              - path: /
+                service:
+                  identifier: app
+                  port: http
+          - host: s3.kinzoku.dev
+            paths:
+              - path: /
+                service:
+                  identifier: app
+                  port: s3
+    persistence:
+      config:
+        type: nfs
+        server: nas-prod-01.home.kinzoku.dev
+        path: /mnt/data/kube/minio
+        globalMounts:
+          - path: /data
