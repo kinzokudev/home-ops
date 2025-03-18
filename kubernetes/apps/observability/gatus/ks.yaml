@@ -12,6 +12,7 @@ spec:
   interval: 1h
   dependsOn:
     - name: cloudnative-pg-cluster
+      namespace: database
   path: ./kubernetes/apps/observability/gatus/app
   prune: true
   retryInterval: 2m
