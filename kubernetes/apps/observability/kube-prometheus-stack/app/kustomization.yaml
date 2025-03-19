@@ -5,7 +5,7 @@ kind: Kustomization
 resources:
   - ./externalsecret.yaml
   - ./externalsecret_am.yaml
-  - ./helmrepo.yaml
+  - ./ocirepo.yaml
   - ./helmrelease.yaml
   # - ./prometheusrule.yaml
   - ./scrapeconfig.yaml
