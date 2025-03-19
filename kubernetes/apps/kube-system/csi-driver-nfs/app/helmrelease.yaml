@@ -23,7 +23,7 @@ spec:
       create: true
       name: nfs-slow
       parameters:
-        server: nas-prod-01.home.kinzoku.dev
+        server: singularity.internal
         share: /mnt/data/kubernetes
       mountOptions:
         - nfsvers=4.2

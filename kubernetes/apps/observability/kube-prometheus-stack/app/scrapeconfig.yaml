@@ -7,8 +7,8 @@ metadata:
 spec:
   staticConfigs:
     - targets:
-        - nas-prod-01.home.kinzoku.dev:9100
-        - dns-prod-01.home.kinzoku.dev:9100
+        - singularity.internal:9100
+        - wormhole.internal:9100
   metricsPath: /metrics
   relabelings:
     - action: replace
@@ -23,7 +23,7 @@ metadata:
 spec:
   staticConfigs:
     - targets:
-        - nas-prod-01.home.kinzoku.dev:9633
+        - singularity.internal:9633
   metricsPath: /metrics
   relabelings:
     - action: replace

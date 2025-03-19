@@ -110,7 +110,7 @@ spec:
     persistence:
       config:
         type: nfs
-        server: nas-prod-01.home.kinzoku.dev
+        server: singularity.internal
         path: /mnt/data/kube/minio
         globalMounts:
           - path: /data

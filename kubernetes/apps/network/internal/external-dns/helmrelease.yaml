@@ -37,7 +37,7 @@ spec:
       - --events
       - --ignore-ingress-tls-spec
       - --ingress-class=internal
-      - --pihole-server=http://dns-prod-01.home.kinzoku.dev
+      - --pihole-server=http://wormhole.internal
     policy: upsert-only
     registry: noop
     sources: ["ingress", "service"]
