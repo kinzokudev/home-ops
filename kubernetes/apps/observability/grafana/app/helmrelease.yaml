@@ -22,10 +22,16 @@ spec:
       namespace: observability
     - name: loki
       namespace: observability
+  valuesFrom:
+    - targetPath: adminUser
+      kind: Secret
+      name: &secret grafana-admin-secret
+      valuesKey: grafana_username
+    - targetPath: adminPassword
+      kind: Secret
+      name: *secret
+      valuesKey: grafana_password
   values:
-    admin:
-      existingSecret: grafana-admin-secret
-
     annotations:
       configmap.reloader.stakater.com/reload: grafana
       secret.reloader.stakater.com/reload: grafana-admin-secret
