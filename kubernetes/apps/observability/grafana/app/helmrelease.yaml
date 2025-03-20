@@ -89,7 +89,7 @@ spec:
             disableDeletion: false
             editable: true
             options:
-              path: /var/lib/grafana/dashboards/default
+              path: /var/lib/grafana/dashboards/default-folder
           # - name: ceph
           #   orgId: 1
           #   folder: Ceph
@@ -97,7 +97,7 @@ spec:
           #   disableDeletion: false
           #   editable: true
           #   options:
-          #     path: /var/lib/grafana/dashboards/ceph-folder
+          #     path: /var/lib/grafana/dashboards/ceph-folder-folder
           # - name: emqx
           #   orgId: 1
           #   folder: EMQX
@@ -105,7 +105,7 @@ spec:
           #   disableDeletion: false
           #   editable: true
           #   options:
-          #     path: /var/lib/grafana/dashboards/emqx-folder
+          #     path: /var/lib/grafana/dashboards/emqx-folder-folder
           - name: flux
             orgId: 1
             folder: Flux
@@ -113,7 +113,7 @@ spec:
             disableDeletion: false
             editable: true
             options:
-              path: /var/lib/grafana/dashboards/flux
+              path: /var/lib/grafana/dashboards/flux-folder
           - name: kubernetes
             orgId: 1
             folder: Kubernetes
@@ -121,7 +121,7 @@ spec:
             disableDeletion: false
             editable: true
             options:
-              path: /var/lib/grafana/dashboards/kubernetes
+              path: /var/lib/grafana/dashboards/kubernetes-folder
           - name: nginx
             orgId: 1
             folder: Nginx
@@ -129,7 +129,7 @@ spec:
             disableDeletion: false
             editable: true
             options:
-              path: /var/lib/grafana/dashboards/nginx
+              path: /var/lib/grafana/dashboards/nginx-folder
           - name: prometheus
             orgId: 1
             folder: Prometheus
@@ -137,7 +137,7 @@ spec:
             disableDeletion: false
             editable: true
             options:
-              path: /var/lib/grafana/dashboards/prometheus
+              path: /var/lib/grafana/dashboards/prometheus-folder
           - name: postgres
             orgId: 1
             folder: Postgres
@@ -145,7 +145,7 @@ spec:
             disableDeletion: false
             editable: true
             options:
-              path: /var/lib/grafana/dashboards/postgres
+              path: /var/lib/grafana/dashboards/postgres-folder
           # - name: unifi
           #   orgId: 1
           #   folder: Unifi
@@ -153,7 +153,7 @@ spec:
           #   disableDeletion: false
           #   editable: true
           #   options:
-          #     path: /var/lib/grafana/dashboards/unifi-folder
+          #     path: /var/lib/grafana/dashboards/unifi-folder-folder
     datasources:
       datasources.yaml:
         apiVersion: 1
