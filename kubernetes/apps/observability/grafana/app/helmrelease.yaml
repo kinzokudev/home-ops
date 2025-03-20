@@ -18,33 +18,39 @@ spec:
       strategy: rollback
       retries: 3
   dependsOn:
-    # - name: authelia
-    #   namespace: default
     - name: kube-prometheus-stack
       namespace: observability
     - name: loki
       namespace: observability
   values:
+    admin:
+      existingSecret: grafana-admin-secret
+
+    annotations:
+      configmap.reloader.stakater.com/reload: grafana
+      secret.reloader.stakater.com/reload: grafana-admin-secret
+
+    replicas: 1
+
     extraInitContainers:
       - name: 01-init-db
         image: ghcr.io/onedr0p/postgres-init:16
         envFrom:
           - secretRef:
               name: &secret grafana-secret
-    replicas: 2
     env:
-      # GF_AUTH_GENERIC_OAUTH_API_URL: https://auth.kinzoku.dev/api/oidc/userinfo
-      # GF_AUTH_GENERIC_OAUTH_AUTH_URL: https://auth.kinzoku.dev/api/oidc/authorization
-      # GF_AUTH_GENERIC_OAUTH_TOKEN_URL: https://auth.kinzoku.dev/api/oidc/token
       GF_DATE_FORMATS_USE_BROWSER_LOCALE: true
+      GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: /tmp/dashboards/home.json
       GF_EXPLORE_ENABLED: true
+      GF_LOG_MODE: console
       GF_FEATURE_TOGGLES_ENABLE: publicDashboards
       GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS: natel-discrete-panel,pr0ps-trackmap-panel,panodata-map-panel
-      GF_SECURITY_ANGULAR_SUPPORT_ENABLED: true
       GF_SECURITY_COOKIE_SAMESITE: grafana
       GF_SERVER_ROOT_URL: https://grafana.kinzoku.dev
     envFromSecrets:
       - name: *secret
+    imageRenderer:
+      enabled: true
     grafana.ini:
       analytics:
         check_for_updates: false
@@ -83,7 +89,7 @@ spec:
             disableDeletion: false
             editable: true
             options:
-              path: /var/lib/grafana/dashboards/default-folder
+              path: /var/lib/grafana/dashboards/default
           # - name: ceph
           #   orgId: 1
           #   folder: Ceph
@@ -107,7 +113,7 @@ spec:
             disableDeletion: false
             editable: true
             options:
-              path: /var/lib/grafana/dashboards/flux-folder
+              path: /var/lib/grafana/dashboards/flux
           - name: kubernetes
             orgId: 1
             folder: Kubernetes
@@ -115,7 +121,7 @@ spec:
             disableDeletion: false
             editable: true
             options:
-              path: /var/lib/grafana/dashboards/kubernetes-folder
+              path: /var/lib/grafana/dashboards/kubernetes
           - name: nginx
             orgId: 1
             folder: Nginx
@@ -123,7 +129,7 @@ spec:
             disableDeletion: false
             editable: true
             options:
-              path: /var/lib/grafana/dashboards/nginx-folder
+              path: /var/lib/grafana/dashboards/nginx
           - name: prometheus
             orgId: 1
             folder: Prometheus
@@ -131,15 +137,15 @@ spec:
             disableDeletion: false
             editable: true
             options:
-              path: /var/lib/grafana/dashboards/prometheus-folder
-          - name: thanos
+              path: /var/lib/grafana/dashboards/prometheus
+          - name: postgres
             orgId: 1
-            folder: Thanos
+            folder: Postgres
             type: file
             disableDeletion: false
             editable: true
             options:
-              path: /var/lib/grafana/dashboards/thanos-folder
+              path: /var/lib/grafana/dashboards/postgres
           # - name: unifi
           #   orgId: 1
           #   folder: Unifi
@@ -152,31 +158,28 @@ spec:
       datasources.yaml:
         apiVersion: 1
         deleteDatasources:
-          - { name: Alertmanager, orgId: 1 }
-          - { name: Loki, orgId: 1 }
-          - { name: Prometheus, orgId: 1 }
+          - name: Alertmanager
+            orgId: 1
+          - name: Loki
+            orgId: 1
+          - name: Prometheus
+            orgId: 1
         datasources:
           - name: Prometheus
             type: prometheus
-            uid: prometheus
             access: proxy
-            url: http://thanos-query-frontend.observability.svc.cluster.local:10902
+            url: http://prometheus-operated.monitoring.svc.cluster.local:9090
             jsonData:
-              prometheusType: Thanos
-              timeInterval: 1m
+              prometheusType: Prometheus
             isDefault: true
           - name: Loki
             type: loki
-            uid: loki
             access: proxy
-            url: http://loki-gateway.observability.svc.cluster.local
-            jsonData:
-              maxLines: 250
+            url: http://loki-headless.monitoring.svc.cluster.local:3100
           - name: Alertmanager
             type: alertmanager
-            uid: alertmanager
             access: proxy
-            url: http://alertmanager-operated.observability.svc.cluster.local:9093
+            url: http://alertmanager.monitoring.svc.cluster.local:9093
             jsonData:
               implementation: prometheus
     dashboards:
@@ -186,7 +189,8 @@ spec:
           gnetId: 17457
           revision: 6
           datasource:
-            - { name: DS_PROMETHEUS, value: Prometheus }
+            - name: DS_PROMETHEUS
+              value: Prometheus
         external-dns:
           # renovate: depName="External-dns"
           gnetId: 15038
@@ -197,32 +201,38 @@ spec:
           gnetId: 13502
           revision: 26
           datasource:
-            - { name: DS_PROMETHEUS, value: Prometheus }
+            - name: DS_PROMETHEUS
+              value: Prometheus
         node-exporter-full:
           # renovate: depName="Node Exporter Full"
           gnetId: 1860
           revision: 36
           datasource: Prometheus
-        # smart:
-        #   # renovate: depName="Dashboard for smartctl_exporter"
-        #   gnetId: 20204
-        #   revision: 1
-        #   datasource:
-        #     - { name: DS_PROMETHEUS, value: Prometheus }
-        # spegel:
-        #   # renovate: depName="Spegel"
-        #   gnetId: 18089
-        #   revision: 1
-        #   datasource:
-        #     - { name: DS_PROMETHEUS, value: Prometheus }
+        smartctl-exporter:
+          # renovate: depName="SMARTctl Exporter Dashboard"
+          gnetId: 22604
+          revision: 1
+          datasource:
+            - name: DS_PROMETHEUS
+              value: Prometheus
+        spegel:
+          # renovate: depName="Spegel"
+          gnetId: 18089
+          revision: 1
+          datasource:
+            - name: DS_PROMETHEUS
+              value: Prometheus
         zfs:
           # renovate: depName="ZFS"
           gnetId: 7845
           revision: 4
           datasource: Prometheus
         cert-manager:
-          url: https://raw.githubusercontent.com/monitoring-mixins/website/master/assets/cert-manager/dashboards/cert-manager.json
+          # renovate: depName="Cert-manager-Kubernetes"
+          gnetId: 20842
+          revision: 3
           datasource: Prometheus
+          # url: https://raw.githubusercontent.com/monitoring-mixins/website/master/assets/cert-manager/dashboards/cert-manager.json
         dragonfly:
           url: https://raw.githubusercontent.com/dragonflydb/dragonfly/main/tools/local/monitoring/grafana/provisioning/dashboards/dashboard.json
           datasource: Prometheus
@@ -257,6 +267,9 @@ spec:
           datasource: Prometheus
         flux-control-plane:
           url: https://raw.githubusercontent.com/fluxcd/flux2-monitoring-example/main/monitoring/configs/dashboards/control-plane.json
+          datasource: Prometheus
+        flux-logs:
+          url: https://raw.githubusercontent.com/fluxcd/flux2-monitoring-example/main/monitoring/configs/dashboards/logs.json
           datasource: Prometheus
       kubernetes:
         kubernetes-api-server:
@@ -307,34 +320,6 @@ spec:
           gnetId: 19105
           revision: 3
           datasource: Prometheus
-      thanos:
-        thanos-bucket-replicate:
-          url: https://raw.githubusercontent.com/monitoring-mixins/website/master/assets/thanos/dashboards/bucket-replicate.json
-          datasource: Prometheus
-        thanos-compact:
-          url: https://raw.githubusercontent.com/monitoring-mixins/website/master/assets/thanos/dashboards/compact.json
-          datasource: Prometheus
-        thanos-overview:
-          url: https://raw.githubusercontent.com/monitoring-mixins/website/master/assets/thanos/dashboards/overview.json
-          datasource: Prometheus
-        thanos-query:
-          url: https://raw.githubusercontent.com/monitoring-mixins/website/master/assets/thanos/dashboards/query.json
-          datasource: Prometheus
-        thanos-query-frontend:
-          url: https://raw.githubusercontent.com/monitoring-mixins/website/master/assets/thanos/dashboards/query-frontend.json
-          datasource: Prometheus
-        thanos-receieve:
-          url: https://raw.githubusercontent.com/monitoring-mixins/website/master/assets/thanos/dashboards/receive.json
-          datasource: Prometheus
-        thanos-rule:
-          url: https://raw.githubusercontent.com/monitoring-mixins/website/master/assets/thanos/dashboards/rule.json
-          datasource: Prometheus
-        thanos-sidecar:
-          url: https://raw.githubusercontent.com/monitoring-mixins/website/master/assets/thanos/dashboards/sidecar.json
-          datasource: Prometheus
-        thanos-store:
-          url: https://raw.githubusercontent.com/monitoring-mixins/website/master/assets/thanos/dashboards/store.json
-          datasource: Prometheus
     sidecar:
       dashboards:
         enabled: true
@@ -365,6 +350,17 @@ spec:
       hosts: ["grafana.kinzoku.dev"]
     persistence:
       enabled: false
+    rbac:
+      pspEnabled: false
+    serviceAccount:
+      create: true
+      autoMount: true
+    resources:
+      limits:
+        memory: 512Mi
+      requests:
+        cpu: 50m
+        memory: 128Mi
     testFramework:
       enabled: false
     topologySpreadConstraints:

@@ -23,10 +23,6 @@ spec:
   dependsOn:
     - name: openebs
       namespace: openebs-system
-    - name: vector-agent
-      namespace: observability
-    - name: vector-aggregator
-      namespace: observability
   valuesFrom:
     - targetPath: loki.storage.s3.accessKeyId
       kind: Secret
@@ -88,7 +84,7 @@ spec:
         ruler:
           enable_api: true
           enable_alertmanager_v2: true
-          alertmanager_url: http://alertmanager-operated.observability.svc.cluster.local:9093
+          alertmanager_url: http://alertmanager.monitoring.svc.cluster.local:9093
           storage:
             type: local
             local:
