@@ -6,4 +6,4 @@ resources:
   - ./cluster16.yaml
   - ./service.yaml
   - ./scheduledbackup.yaml
-  # - ./gatus.yaml
+  - ./gatus.yaml
