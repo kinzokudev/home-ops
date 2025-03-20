@@ -19,7 +19,7 @@ cniConfig:
   name: none
 
 nodes:
-  - hostname: "srv-prod-01"
+  - hostname: "talos-01"
     ipAddress: "192.168.40.21"
     installDisk: "/dev/nvme0n1"
     machineSpec:
@@ -38,7 +38,7 @@ nodes:
         mtu: 1500
         vip:
           ip: "192.168.40.30"
-  - hostname: "srv-prod-02"
+  - hostname: "talos-02"
     ipAddress: "192.168.40.22"
     installDisk: "/dev/nvme0n1"
     machineSpec:
@@ -57,7 +57,7 @@ nodes:
         mtu: 1500
         vip:
           ip: "192.168.40.30"
-  - hostname: "srv-prod-03"
+  - hostname: "talos-03"
     ipAddress: "192.168.40.23"
     installDisk: "/dev/nvme0n1"
     machineSpec:
