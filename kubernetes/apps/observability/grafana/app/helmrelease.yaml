@@ -22,16 +22,11 @@ spec:
       namespace: observability
     - name: loki
       namespace: observability
-  valuesFrom:
-    - targetPath: adminUser
-      kind: Secret
-      name: &secret grafana-admin-secret
-      valuesKey: grafana_username
-    - targetPath: adminPassword
-      kind: Secret
-      name: *secret
-      valuesKey: grafana_password
   values:
+    deploymentStrategy:
+      type: Recreate
+    admin:
+      existingSecret: grafana-admin-secret
     annotations:
       configmap.reloader.stakater.com/reload: grafana
       secret.reloader.stakater.com/reload: grafana-admin-secret
@@ -52,6 +47,7 @@ spec:
       GF_FEATURE_TOGGLES_ENABLE: publicDashboards
       GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS: natel-discrete-panel,pr0ps-trackmap-panel,panodata-map-panel
       GF_SECURITY_COOKIE_SAMESITE: grafana
+      GF_SECURITY_ANGULAR_SUPPORT_ENABLED: true
       GF_SERVER_ROOT_URL: https://grafana.kinzoku.dev
     envFromSecrets:
       - name: *secret
@@ -81,7 +77,10 @@ spec:
       auth.basic:
         enabled: false
       auth.anonymous:
-        enabled: false
+        enabled: true
+        org_id: 1
+        org_name: Main Org.
+        org_role: Viewer
       news:
         news_feed_enabled: false
     dashboardProviders:
@@ -234,7 +233,10 @@ spec:
           revision: 4
           datasource: Prometheus
         cert-manager:
-          url: https://raw.githubusercontent.com/monitoring-mixins/website/master/assets/cert-manager/dashboards/cert-manager.json
+          # renovate: depName="Cert-manager-Kubernetes"
+          gnetId: 20842
+          revision: 3
+          datasource: Prometheus
         dragonfly:
           url: https://raw.githubusercontent.com/dragonflydb/dragonfly/main/tools/local/monitoring/grafana/provisioning/dashboards/dragonfly.json
           datasource: Prometheus
