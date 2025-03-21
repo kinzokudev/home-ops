@@ -27,7 +27,6 @@ spec:
     cleanPrometheusOperatorObjectNames: true
     crds:
       enabled: false
-    fullnameOverride: prometheus
     alertmanager:
       enabled: false
     grafana:
