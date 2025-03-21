@@ -95,7 +95,7 @@ spec:
         alertingEndpoints:
           - namespace: observability
             name: alertmanager
-            pot: 9093
+            port: 9093
             apiVersion: v2
         enableAdminAPI: true
         enableFeatures:
