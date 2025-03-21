@@ -85,7 +85,7 @@ spec:
       enabled: false
     test:
       enabled: false
-    SingleBinary:
+    singleBinary:
       replicas: 1
       persistence:
         enabled: true
