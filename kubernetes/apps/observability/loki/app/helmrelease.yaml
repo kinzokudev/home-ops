@@ -51,7 +51,8 @@ spec:
         chunk_encoding: snappy
       storage:
         bucketNames:
-          chunks: "loki"
+          chunks: "loki-chunks"
+          ruler: "loki-ruler"
         type: s3
         s3:
           insecure: false
