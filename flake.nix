@@ -31,22 +31,22 @@
             nativeBuildInputs = with pkgs; [
               mise
               python313
-              uv
-              cilium-cli
-              cloudflared
-              cue
-              age
-              sops
-              fluxcd
-              go-task
-              kubernetes-helm
-              helmfile
-              jq
-              kustomize
-              yq-go
-              kubeconform
-              makejinja
-              python313Packages.netaddr
+              # uv
+              # cilium-cli
+              # cloudflared
+              # cue
+              # age
+              # sops
+              # fluxcd
+              # go-task
+              # kubernetes-helm
+              # helmfile
+              # jq
+              # kustomize
+              # yq-go
+              # kubeconform
+              # makejinja
+              # python313Packages.netaddr
               dig
               kdash
             ];
