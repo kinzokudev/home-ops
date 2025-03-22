@@ -13,6 +13,10 @@ TALOS_DIR = "{{config_root}}/talos"
 description = "Install Python dependencies"
 run = "uv pip install -r requirements.txt"
 
+[hooks.enter]
+shell = "fish"
+script = "kubectl completion fish | source && flux completion fish | source && talosctl completion fish | source"
+
 [tools]
 "python" = "3.13"
 "uv" = "latest"
