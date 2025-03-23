@@ -1,6 +1,8 @@
 {
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+
+    talhelper.url = "github:budimanjojo/talhelper";
   };
 
   outputs =
@@ -17,6 +19,17 @@
         system:
         import nixpkgs {
           inherit system;
+          overlays = [
+            inputs.talhelper.overlays.default
+            (_: prev: {
+              custom =
+                (prev.custom or { })
+                // (import ./nix/pkgs {
+                  inherit (prev) pkgs;
+                  inherit inputs;
+                });
+            })
+          ];
           config.allowUnfree = true;
         };
     in
@@ -31,14 +44,17 @@
             nativeBuildInputs = with pkgs; [
               mise
               python313
-              # uv
-              # cilium-cli
-              # cloudflared
-              # cue
-              # age
-              # sops
-              # fluxcd
-              # go-task
+              dig
+              kdash
+              uv
+              talhelper
+              custom.cilium-cli
+              cloudflared
+              cue
+              age
+              sops
+              custom.fluxcd
+              go-task
               # kubernetes-helm
               # helmfile
               # jq
@@ -47,10 +63,13 @@
               # kubeconform
               # makejinja
               # python313Packages.netaddr
-              dig
-              kdash
             ];
             buildInputs = nativeBuildInputs;
+            shellHook = ''
+              ${pkgs.kubectl}/bin/kubectl completion fish | source
+              ${pkgs.fluxcd}/bin/flux completion fish | source
+              ${pkgs.talosctl}/bin/talosctl completion fish | source
+            '';
           };
         }
       );
