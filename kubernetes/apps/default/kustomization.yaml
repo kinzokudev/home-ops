@@ -10,4 +10,3 @@ resources:
   - ./echo/ks.yaml
   - ./glauth/ks.yaml
   - ./smtp-relay/ks.yaml
-  - ./minio/ks.yaml
