@@ -65,11 +65,6 @@
               # python313Packages.netaddr
             ];
             buildInputs = nativeBuildInputs;
-            shellHook = ''
-              ${pkgs.kubectl}/bin/kubectl completion fish | source
-              ${pkgs.fluxcd}/bin/flux completion fish | source
-              ${pkgs.talosctl}/bin/talosctl completion fish | source
-            '';
           };
         }
       );
