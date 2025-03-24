@@ -25,5 +25,5 @@ spec:
     monitoring:
       podMonitorEnabled: false
       grafanaDashboard:
-        create: true
+        create: false
         configMapName: cloudnative-pg-grafana-dashboard
