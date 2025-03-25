@@ -8,5 +8,4 @@ components:
   - ../../components/repos/app-template
 resources:
   - ./echo/ks.yaml
-  - ./glauth/ks.yaml
   - ./smtp-relay/ks.yaml
