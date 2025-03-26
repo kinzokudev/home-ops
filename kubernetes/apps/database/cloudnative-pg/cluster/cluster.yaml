@@ -3,7 +3,7 @@
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
-  name: postgres16
+  name: postgres
 spec:
   instances: 3
   imageName: ghcr.io/cloudnative-pg/postgresql:16.2-16
@@ -38,7 +38,7 @@ spec:
         maxParallel: 8
       destinationPath: s3://cloudnative-pg
       endpointURL: https://s3.kinzoku.dev
-      serverName: &currentCluster postgres16-v1
+      serverName: &currentCluster postgres-v1
       s3Credentials:
         accessKeyId:
           name: cloudnative-pg-secret
