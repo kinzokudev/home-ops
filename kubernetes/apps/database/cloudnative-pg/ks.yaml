@@ -34,7 +34,16 @@ spec:
   prune: true
   dependsOn:
     - name: cloudnative-pg
+  healthCheckExprs:
+    - apiVersion: postgresql.cnpg.io/v1
+      kind: Cluster
+      failed: status.conditions.filter(e, e.type == 'Ready').all(e, e.status == 'False')
+      current: status.conditions.filter(e, e.type == 'Ready').all(e, e.status == 'True')
   retryInterval: 2m
+  postBuild:
+    substitute:
+      # renovate: datasource=docker depName=ghcr.io/cloudnative-pg/postgresql
+      POSTGRESQL_VERSION: 17.4-bookworm
   sourceRef:
     kind: GitRepository
     name: flux-system
