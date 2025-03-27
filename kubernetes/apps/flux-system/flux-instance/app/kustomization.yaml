@@ -13,3 +13,21 @@ configMapGenerator:
       - values.yaml=./helm/values.yaml
 configurations:
   - ./helm/kustomizeconfig.yaml
+patches:
+  - patch: |
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: all
+      spec:
+        template:
+          spec:
+            containers:
+              - name: manager
+                resources:
+                  limits:
+                    cpu: ~
+                    memory: ~
+    target:
+      kind: Deployment
+      name: "(kustomize-controller|helm-controller|source-controller|notification-controller)"
