@@ -6,3 +6,5 @@ namespace: selfhosted
 components:
   - ../../components/common
   - ../../components/repos/app-template
+resources:
+  - ./it-tools/ks.yaml
