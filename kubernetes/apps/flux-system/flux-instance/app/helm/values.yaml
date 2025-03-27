@@ -15,3 +15,44 @@ instance:
     url: "https://github.com/kinzokudev/homelab.git"
     ref: "refs/heads/main"
     path: kubernetes/flux/cluster
+  kustomize:
+    patches:
+      # allow flux components to run on the control-plane.
+      - patch: |-
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: not-used
+          spec:
+            template:
+              spec:
+                affinity:
+                  nodeAffinity:
+                    requiredDuringSchedulingIgnoredDuringExecution:
+                      nodeSelectorTerms:
+                      - matchExpressions:
+                        - key: node-role.kubernetes.io/control-plane
+                          operator: Exists
+                tolerations:
+                - key: node-role.kubernetes.io/control-plane
+                  operator: Exists
+        target:
+          kind: Deployment
+          labelSelector: control-plane=controller
+      # unset CPU limits.
+      - patch: |
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: not-used
+          spec:
+            template:
+              spec:
+                containers:
+                  - name: manager
+                    resources:
+                      limits:
+                        cpu: ~
+        target:
+          kind: Deployment
+          name: "(kustomize-controller|helm-controller|source-controller|notification-controller)"
