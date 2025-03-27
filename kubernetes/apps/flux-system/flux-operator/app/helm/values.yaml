@@ -1,3 +1,7 @@
 ---
 serviceMonitor:
   create: true
+resources:
+  limits:
+    cpu: ~
+    memory: ~
