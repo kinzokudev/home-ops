@@ -38,3 +38,4 @@ script = "kubectl completion fish | source && flux completion fish | source && t
 "aqua:siderolabs/talos" = "1.9.4"
 "aqua:yannh/kubeconform" = "0.6.7"
 "ubi:applejag/kubectl-klock" = "v0.7.2"
+"ubi:derailed/k9s" = "v0.40.10"
