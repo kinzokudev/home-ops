@@ -34,9 +34,8 @@ spec:
       tag: v0.16.0-rc.5
     runner:
       image:
-        repository: ghcr.io/flux-iac/tf-runner
-        tag: v0.16.0-rc.5
-        pullPolicy: IfNotPresent
+        repository: ghcr.io/home-operations/opentofu-runner
+        tag: 1.9.0@sha256:0719c04ce55936029e289e7825bc4a019add3756b536578c43fb4abfa06aa466
       grpc:
         maxMessageSize: 30
     logLevel: info
