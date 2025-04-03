@@ -3,8 +3,10 @@ resource "cloudflare_dns_record" "email_imap_incoming" {
   ttl = 1
   type = "SRV"
   priority = 0
-  weight = 1
-  port = 993
+  data = {
+    weight = 1
+    port = 993
+  }
   content = "imap.migadu.com"
   zone_id = module.onepassword_cloudflare.fields["CLOUDFLARE_ZONE_ID"]
 }
@@ -14,8 +16,10 @@ resource "cloudflare_dns_record" "email_pop3_incoming" {
   ttl = 1
   type = "SRV"
   priority = 0
-  weight = 1
-  port = 995
+  data = {
+    weight = 1
+    port = 995
+  }
   content = "pop.migadu.com"
   zone_id = module.onepassword_cloudflare.fields["CLOUDFLARE_ZONE_ID"]
 }
@@ -25,8 +29,10 @@ resource "cloudflare_dns_record" "email_smtp_outgoing" {
   ttl = 1
   type = "SRV"
   priority = 0
-  weight = 1
-  port = 465
+  data = {
+    weight = 1
+    port = 465
+  }
   content = "smtp.migadu.com"
   zone_id = module.onepassword_cloudflare.fields["CLOUDFLARE_ZONE_ID"]
 }
@@ -36,8 +42,10 @@ resource "cloudflare_dns_record" "email_outlook_autodiscover" {
   ttl = 1
   type = "SRV"
   priority = 0
-  weight = 1
-  port = 443
+  data = {
+    weight = 1
+    port = 443
+  }
   content = "autodiscover.migadu.com"
   zone_id = module.onepassword_cloudflare.fields["CLOUDFLARE_ZONE_ID"]
 }
