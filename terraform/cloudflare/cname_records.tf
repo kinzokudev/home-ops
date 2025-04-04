@@ -33,3 +33,12 @@ resource "cloudflare_dns_record" "email_tertiary_key" {
   content = "key3.kinzoku.dev._domainkey.migadu.com"
   zone_id = module.onepassword_cloudflare.fields["CLOUDFLARE_ZONE_ID"]
 }
+
+resource "cloudflare_dns_record" "email_autoconfig" {
+  name = "autoconfig"
+  proxied = false
+  ttl = 1
+  type = "CNAME"
+  content = "autoconfig.migadu.com"
+  zone_id = module.onepassword_cloudflare.fields["CLOUDFLARE_ZONE_ID"]
+}
