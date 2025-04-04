@@ -6,8 +6,8 @@ resource "cloudflare_dns_record" "email_imap_incoming" {
   data = {
     weight = 1
     port = 993
+    target = "imap.migadu.com"
   }
-  content = "imap.migadu.com"
   zone_id = module.onepassword_cloudflare.fields["CLOUDFLARE_ZONE_ID"]
 }
 
@@ -19,8 +19,8 @@ resource "cloudflare_dns_record" "email_pop3_incoming" {
   data = {
     weight = 1
     port = 995
+    target = "pop.migadu.com"
   }
-  content = "pop.migadu.com"
   zone_id = module.onepassword_cloudflare.fields["CLOUDFLARE_ZONE_ID"]
 }
 
@@ -32,8 +32,8 @@ resource "cloudflare_dns_record" "email_smtp_outgoing" {
   data = {
     weight = 1
     port = 465
+    target = "smtp.migadu.com"
   }
-  content = "smtp.migadu.com"
   zone_id = module.onepassword_cloudflare.fields["CLOUDFLARE_ZONE_ID"]
 }
 
@@ -45,7 +45,7 @@ resource "cloudflare_dns_record" "email_outlook_autodiscover" {
   data = {
     weight = 1
     port = 443
+    target = "autodiscover.migadu.com"
   }
-  content = "autodiscover.migadu.com"
   zone_id = module.onepassword_cloudflare.fields["CLOUDFLARE_ZONE_ID"]
 }
