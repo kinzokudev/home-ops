@@ -1,0 +1,130 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: homepage-config
+  labels:
+    app.kubernetes.io/name: homepage
+data:
+  bookmarks.yaml: |
+    - Communicate:
+        - Discord:
+            - icon: discord.png
+              href: 'https://discord.com/app'
+        - Mail:
+            - icon: mdi-email
+              href: 'https://admin.migadu.com'
+        - Calendar:
+            - icon: si-protoncalendar
+              href: 'https://calendar.proton.me'
+    - Media:
+        - YouTube:
+            - icon: youtube.png
+              href: 'https://youtube.com/feed/subscriptions'
+        - Navidrome:
+            - icon: sh-navidrome
+              href: 'https://navidrome-prod-01.kinzoku.dev'
+    - Dev:
+        - kubesearch:
+            - icon: kubernetes-dashboard.png
+              href: 'https://kubesearch.dev'
+        - Kinzoku GitHub :
+            - icon: github.png
+              href: 'https://github.com/kinzokudev'
+        - Home Ops GitHub:
+            - icon: github.png
+              href: 'https://github.com/home-operations'
+  docker.yaml: ""
+  kubernetes.yaml: |
+    mode: cluster
+  services.yaml: |
+    - Network:
+        - Cloudflared:
+            href: 'https://dash.cloudflare.com'
+            icon: cloudflare.png
+            description: Cloudflared Tunnel Status
+            widget:
+              type: cloudflared
+              accountid: {{HOMEPAGE_VAR_CLOUDFLARED_ACCOUNTID}}
+              tunnelid: {{HOMEPAGE_VAR_CLOUDFLARED_TUNNELID}}
+              key: {{HOMEPAGE_VAR_CLOUDFLARED_API_TOKEN}}
+              fields: ["status"]
+  settings.yaml: |
+    title: Dashboard
+    favicon: https://github.com/kinzokudev/home-ops/blob/main/assets/repo_logo.png
+    useEqualHeights: true
+    theme: dark
+    background:
+      image: https://raw.githubusercontent.com/kinzokudev/home-ops/main/assets/purple_vortex.png
+      opacity: 20
+    color: slate
+    headerStyle: clean
+    quicklaunch:
+      searchDescriptions: true
+      hideInternetSearch: true
+      showSearchSuggestions: true
+      hideVisitURL: true
+    layout:
+      Network:
+        style: row
+        columns: 3
+        icon: mdi-network
+      Games:
+        style: row
+        columns: 3
+        icon: mdi-minecraft
+      Calendar:
+        style: column
+        icon: mdi-calendar
+      Video:
+        style: column
+        icon: mdi-play-circle
+      Infrastructure:
+        style: row
+        columns: 5
+        icon: mdi-server
+      Observability:
+        style: row
+        columns: 5
+        icon: mdi-chart-line
+      Home:
+        style: row
+        columns: 5
+        icon: mdi-home-analytics
+      Downloads:
+        style: row
+        columns: 5
+        icon: mdi-download-circle
+  widgets.yaml: |
+    - logo:
+        icon: https://raw.githubusercontent.com/kinzokudev/home-ops/main/assets/kinzoku_profile_picture.png
+    - search:
+        provider: [brave, google]
+        focus: false
+        target: _blank
+    - greeting:
+        text_size: xl
+        text: "henlo!"
+    - kubernetes:
+        cluster:
+          cpu: true
+          memory: true
+          show: true
+          showLabel: true
+        nodes:
+          cpu: true
+          memory: true
+          show: false
+          showLabel: true
+    - openmeteo:
+        label: Home
+        latitude: {{HOMEPAGE_VAR_LATITUDE}}
+        longitude: {{HOMEPAGE_VAR_LONGITUDE}}
+        units: metric
+        cache: 5
+    - datetime:
+        text_size: l
+        format:
+          timeStyle: short
+          dateStyle: short
+          hourCycle: h23
