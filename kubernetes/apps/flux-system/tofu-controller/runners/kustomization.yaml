@@ -4,3 +4,4 @@ kind: Kustomization
 resources:
   - ./ocirepo.yaml
   - ./cloudflare.yaml
+  - ./minio.yaml
