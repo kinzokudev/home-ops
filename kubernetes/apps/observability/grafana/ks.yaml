@@ -36,6 +36,11 @@ spec:
       REPLICAS: "2"
   patches:
     - target:
+        kind: PostgresCluster
+      patch: |-
+        - op: remove
+          path: /spec/dataSource
+    - target:
         kind: HelmRelease
         name: grafana
       patch: |-
