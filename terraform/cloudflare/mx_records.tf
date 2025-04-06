@@ -1,5 +1,6 @@
 resource "cloudflare_dns_record" "email_primary" {
   name = "@"
+  allow_overwrite = true
   ttl = 1
   type = "MX"
   priority = 10
@@ -9,6 +10,7 @@ resource "cloudflare_dns_record" "email_primary" {
 
 resource "cloudflare_dns_record" "email_secondary" {
   name = "@"
+  allow_overwrite = true
   ttl = 1
   type = "MX"
   priority = 20
