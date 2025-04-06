@@ -8,3 +8,4 @@ components:
   - ../../components/repos/app-template
 resources:
   - ./minio/ks.yaml
+  - ./snapshot-controller/ks.yaml
