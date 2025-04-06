@@ -1,6 +1,5 @@
 resource "cloudflare_dns_record" "main" {
   name = "kinzoku.dev"
-  allow_overwrite = true
   proxied = false
   ttl = 1
   type = "A"
@@ -10,7 +9,6 @@ resource "cloudflare_dns_record" "main" {
 
 resource "cloudflare_dns_record" "www_main" {
   name = "www"
-  allow_overwrite = true
   proxied = false
   ttl = 1
   type = "A"

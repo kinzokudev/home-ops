@@ -1,6 +1,5 @@
 resource "cloudflare_dns_record" "email_imap_incoming" {
   name = "_imaps._tcp.kinzoku.dev"
-  allow_overwrite = true
   ttl = 1
   type = "SRV"
   priority = 0
@@ -14,7 +13,6 @@ resource "cloudflare_dns_record" "email_imap_incoming" {
 
 resource "cloudflare_dns_record" "email_pop3_incoming" {
   name = "_pop3s._tcp.kinzoku.dev"
-  allow_overwrite = true
   ttl = 1
   type = "SRV"
   priority = 0
@@ -28,7 +26,6 @@ resource "cloudflare_dns_record" "email_pop3_incoming" {
 
 resource "cloudflare_dns_record" "email_smtp_outgoing" {
   name = "_submissions._tcp.kinzoku.dev"
-  allow_overwrite = true
   ttl = 1
   type = "SRV"
   priority = 0
@@ -42,7 +39,6 @@ resource "cloudflare_dns_record" "email_smtp_outgoing" {
 
 resource "cloudflare_dns_record" "email_outlook_autodiscover" {
   name = "_autodiscover._tcp.kinzoku.dev"
-  allow_overwrite = true
   ttl = 1
   type = "SRV"
   priority = 0

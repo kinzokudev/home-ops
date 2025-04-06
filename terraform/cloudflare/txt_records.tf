@@ -1,6 +1,5 @@
 resource "cloudflare_dns_record" "email_dmarc" {
   name = "_dmarc"
-  allow_overwrite = true
   ttl = 1
   type = "TXT"
   proxied = false
@@ -10,7 +9,6 @@ resource "cloudflare_dns_record" "email_dmarc" {
 
 resource "cloudflare_dns_record" "email_main_txt" {
   name = "@"
-  allow_overwrite = true
   ttl = 1
   type = "TXT"
   proxied = false
@@ -20,7 +18,6 @@ resource "cloudflare_dns_record" "email_main_txt" {
 
 resource "cloudflare_dns_record" "email_verification" {
   name = "@"
-  allow_overwrite = true
   ttl = 1
   type = "TXT"
   proxied = false

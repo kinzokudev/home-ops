@@ -1,6 +1,5 @@
 resource "cloudflare_dns_record" "mc" {
   name = "mc"
-  allow_overwrite = true
   proxied = false
   ttl = 1
   type = "CNAME"
@@ -10,7 +9,6 @@ resource "cloudflare_dns_record" "mc" {
 
 resource "cloudflare_dns_record" "email_primary_key" {
   name = "key1._domainkey"
-  allow_overwrite = true
   proxied = false
   ttl = 1
   type = "CNAME"
@@ -20,7 +18,6 @@ resource "cloudflare_dns_record" "email_primary_key" {
 
 resource "cloudflare_dns_record" "email_secondary_key" {
   name = "key2._domainkey"
-  allow_overwrite = true
   proxied = false
   ttl = 1
   type = "CNAME"
@@ -30,7 +27,6 @@ resource "cloudflare_dns_record" "email_secondary_key" {
 
 resource "cloudflare_dns_record" "email_tertiary_key" {
   name = "key3._domainkey"
-  allow_overwrite = true
   proxied = false
   ttl = 1
   type = "CNAME"
@@ -40,7 +36,6 @@ resource "cloudflare_dns_record" "email_tertiary_key" {
 
 resource "cloudflare_dns_record" "email_autoconfig" {
   name = "autoconfig"
-  allow_overwrite = true
   proxied = false
   ttl = 1
   type = "CNAME"
