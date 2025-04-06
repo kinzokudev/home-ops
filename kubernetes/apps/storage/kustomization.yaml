@@ -9,3 +9,4 @@ components:
 resources:
   - ./minio/ks.yaml
   - ./snapshot-controller/ks.yaml
+  - ./volsync/ks.yaml
