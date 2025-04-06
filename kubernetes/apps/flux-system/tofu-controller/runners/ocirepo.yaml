@@ -5,7 +5,7 @@ metadata:
   name: tf-files
   namespace: flux-system
 spec:
-  interval: 30m
+  interval: 1m
   url: oci://ghcr.io/kinzokudev/manifests/terraform
   ref:
     tag: main
