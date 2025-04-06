@@ -10,10 +10,16 @@ spec:
       app.kubernetes.io/name: *app
   components:
     - ../../../../components/gatus/external
+    - ../../../../components/postgres
   interval: 1h
   dependsOn:
-    - name: cloudnative-pg-cluster
+    - name: crunchy-postgres
       namespace: database
+  healthCheckExprs:
+    - apiVersion: postgres-operator.crunchydata.com/v1beta1
+      kind: PostgresCluster
+      failed: status.conditions.filter(e, e.type == 'ProxyAvailable').all(e, e.status == 'False')
+      current: status.conditions.filter(e, e.type == 'ProxyAvailable').all(e, e.status == 'True')
   path: ./kubernetes/apps/observability/grafana/app
   prune: true
   retryInterval: 2m
@@ -27,3 +33,35 @@ spec:
   postBuild:
     substitute:
       APP: *app
+      REPLICAS: "2"
+  patches:
+    - target:
+        kind: HelmRelease
+        name: grafana
+      patch: |-
+        apiVersion: helm.toolkit.fluxcd.io/v2
+        kind: HelmRelease
+        metadata:
+          name: grafana
+        spec:
+          values:
+            env:
+              GF_DATABASE_HOST: grafana-pgbouncer.observability.svc.cluster.local
+              GF_DATABASE_NAME: grafana
+              GF_DATABASE_SSL_MODE: require
+              GF_DATABASE_TYPE: postgres
+              GF_DATABASE_USER: grafana
+            envFromSecrets:
+              - name: grafana-admin-secret
+            envValueFrom:
+              GF_DATABASE_PASSWORD:
+                secretKeyRef:
+                  name: grafana-pguser-grafana
+                  key: password
+            ingress:
+              annotations:
+                gethomepage.dev/enabled: "true"
+                gethomepage.dev/icon: grafana.png
+                gethomepage.dev/name: Grafana
+                gethomepage.dev/group: Observability
+                gethomepage.dev/description: Monitoring Dashboards

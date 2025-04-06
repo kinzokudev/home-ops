@@ -31,14 +31,8 @@ spec:
       configmap.reloader.stakater.com/reload: grafana
       secret.reloader.stakater.com/reload: grafana-admin-secret
 
-    replicas: 1
+    replicas: ${REPLICAS:=1}
 
-    extraInitContainers:
-      - name: 01-init-db
-        image: ghcr.io/home-operations/postgres-init:17
-        envFrom:
-          - secretRef:
-              name: &secret grafana-secret
     env:
       GF_DATE_FORMATS_USE_BROWSER_LOCALE: true
       GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: /tmp/dashboards/home.json
@@ -49,8 +43,6 @@ spec:
       GF_SECURITY_COOKIE_SAMESITE: grafana
       GF_SECURITY_ANGULAR_SUPPORT_ENABLED: true
       GF_SERVER_ROOT_URL: https://grafana.kinzoku.dev
-    envFromSecrets:
-      - name: *secret
     imageRenderer:
       enabled: true
     grafana.ini:
@@ -95,22 +87,14 @@ spec:
             editable: true
             options:
               path: /var/lib/grafana/dashboards/default-folder
-          # - name: ceph
-          #   orgId: 1
-          #   folder: Ceph
-          #   type: file
-          #   disableDeletion: false
-          #   editable: true
-          #   options:
-          #     path: /var/lib/grafana/dashboards/ceph-folder-folder
-          # - name: emqx
-          #   orgId: 1
-          #   folder: EMQX
-          #   type: file
-          #   disableDeletion: false
-          #   editable: true
-          #   options:
-          #     path: /var/lib/grafana/dashboards/emqx-folder-folder
+          - name: data
+            orgId: 1
+            folder: Data
+            type: file
+            disableDeletion: false
+            editable: true
+            options:
+              path: /var/lib/grafana/dashboards/data-folder
           - name: flux
             orgId: 1
             folder: Flux
@@ -127,38 +111,31 @@ spec:
             editable: true
             options:
               path: /var/lib/grafana/dashboards/kubernetes-folder
-          - name: nginx
+          - name: network
             orgId: 1
-            folder: Nginx
+            folder: Network
             type: file
             disableDeletion: false
             editable: true
             options:
-              path: /var/lib/grafana/dashboards/nginx-folder
-          - name: prometheus
+              path: /var/lib/grafana/dashboards/network-folder
+          - name: storage
             orgId: 1
-            folder: Prometheus
+            folder: Storage
             type: file
             disableDeletion: false
             editable: true
             options:
-              path: /var/lib/grafana/dashboards/prometheus-folder
-          - name: postgres
+              path: /var/lib/grafana/dashboards/storage-folder
+          - name: system
             orgId: 1
-            folder: Postgres
+            folder: System
             type: file
             disableDeletion: false
             editable: true
+            allowUiUpdates: true
             options:
-              path: /var/lib/grafana/dashboards/postgres-folder
-          # - name: unifi
-          #   orgId: 1
-          #   folder: Unifi
-          #   type: file
-          #   disableDeletion: false
-          #   editable: true
-          #   options:
-          #     path: /var/lib/grafana/dashboards/unifi-folder-folder
+              path: /var/lib/grafana/dashboards/system-folder
     datasources:
       datasources.yaml:
         apiVersion: 1
@@ -189,6 +166,53 @@ spec:
               implementation: prometheus
     dashboards:
       default:
+        # miniflux:
+        #   url: https://raw.githubusercontent.com/miniflux/v2/main/contrib/grafana/dashboard.json
+        #   datasource: Prometheus
+      data:
+        crunchy-pgbackrest: #https://github.com/CrunchyData/postgres-operator-examples/issues/264
+          url: https://raw.githubusercontent.com/CrunchyData/postgres-operator-examples/main/kustomize/monitoring/grafana/dashboards/pgbackrest.json
+          datasource: Prometheus
+        crunchy-pod-details:
+          url: https://raw.githubusercontent.com/CrunchyData/postgres-operator-examples/main/kustomize/monitoring/grafana/dashboards/pod_details.json
+          datasource: Prometheus
+        crunchy-postgresql-details:
+          url: https://raw.githubusercontent.com/CrunchyData/postgres-operator-examples/main/kustomize/monitoring/grafana/dashboards/postgresql_details.json
+          datasource: Prometheus
+        crunchy-postgresql-overview:
+          url: https://raw.githubusercontent.com/CrunchyData/postgres-operator-examples/main/kustomize/monitoring/grafana/dashboards/postgresql_overview.json
+          datasource: Prometheus
+        crunchy-postgresql-service_health:
+          url: https://raw.githubusercontent.com/CrunchyData/postgres-operator-examples/main/kustomize/monitoring/grafana/dashboards/postgresql_service_health.json
+          datasource: Prometheus
+        crunchy-prometheus-alerts:
+          url: https://raw.githubusercontent.com/CrunchyData/postgres-operator-examples/main/kustomize/monitoring/grafana/dashboards/prometheus_alerts.json
+          datasource: Prometheus
+        crunchy-query-statistics:
+          url: https://raw.githubusercontent.com/CrunchyData/postgres-operator-examples/main/kustomize/monitoring/grafana/dashboards/query_statistics.json
+          datasource: Prometheus
+        dragonfly:
+          url: https://raw.githubusercontent.com/dragonflydb/dragonfly/refs/heads/main/tools/local/monitoring/grafana/provisioning/dashboards/dragonfly.json
+          datasource: Prometheus
+        external-secrets:
+          url: https://raw.githubusercontent.com/external-secrets/external-secrets/main/docs/snippets/dashboard.json
+          datasource: Prometheus
+        zfs:
+          # renovate: depName="ZFS"
+          gnetId: 7845
+          revision: 4
+          datasource: Prometheus
+      network:
+        blackbox-exporter:
+          # renovate: depName="Prometheus Blackbox Exporter"
+          gnetId: 7587
+          revision: 3
+          datasource: Prometheus
+        cert-manager:
+          # renovate: depName="Cert-manager-Kubernetes"
+          gnetId: 20842
+          revision: 3
+          datasource: Prometheus
         cloudflared:
           # renovate: depName="Cloudflare Tunnels (cloudflared)"
           gnetId: 17457
@@ -201,70 +225,12 @@ spec:
           gnetId: 15038
           revision: 3
           datasource: Prometheus
-        minio:
-          # renovate: depName="MinIO Dashboard"
-          gnetId: 13502
-          revision: 26
-          datasource:
-            - name: DS_PROMETHEUS
-              value: Prometheus
-        node-exporter-full:
-          # renovate: depName="Node Exporter Full"
-          gnetId: 1860
-          revision: 36
+        nginx:
+          url: https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/grafana/dashboards/nginx.json
           datasource: Prometheus
-        smartctl-exporter:
-          # renovate: depName="SMARTctl Exporter Dashboard"
-          gnetId: 22604
-          revision: 1
-          datasource:
-            - name: DS_PROMETHEUS
-              value: Prometheus
-        spegel:
-          # renovate: depName="Spegel"
-          gnetId: 18089
-          revision: 1
-          datasource:
-            - name: DS_PROMETHEUS
-              value: Prometheus
-        zfs:
-          # renovate: depName="ZFS"
-          gnetId: 7845
-          revision: 4
+        nginx-request-handling-performance:
+          url: https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/grafana/dashboards/request-handling-performance.json
           datasource: Prometheus
-        cert-manager:
-          # renovate: depName="Cert-manager-Kubernetes"
-          gnetId: 20842
-          revision: 3
-          datasource: Prometheus
-        dragonfly:
-          url: https://raw.githubusercontent.com/dragonflydb/dragonfly/main/tools/local/monitoring/grafana/provisioning/dashboards/dragonfly.json
-          datasource: Prometheus
-        external-secrets:
-          url: https://raw.githubusercontent.com/external-secrets/external-secrets/main/docs/snippets/dashboard.json
-          datasource: Prometheus
-        node-feature-discovery:
-          url: https://raw.githubusercontent.com/kubernetes-sigs/node-feature-discovery/master/examples/grafana-dashboard.json
-          datasource: Prometheus
-        # miniflux:
-        #   url: https://raw.githubusercontent.com/miniflux/v2/main/contrib/grafana/dashboard.json
-        #   datasource: Prometheus
-      # ceph:
-      #   ceph-cluster:
-      #     # renovate: depName="Ceph Cluster"
-      #     gnetId: 2842
-      #     revision: 17
-      #     datasource: Prometheus
-      #   ceph-osd:
-      #     # renovate: depName="Ceph - OSD (Single)"
-      #     gnetId: 5336
-      #     revision: 9
-      #     datasource: Prometheus
-      #   ceph-pools:
-      #     # renovate: depName="Ceph - Pools"
-      #     gnetId: 5342
-      #     revision: 9
-      #     datasource: Prometheus
       flux:
         flux-cluster:
           url: https://raw.githubusercontent.com/fluxcd/flux2-monitoring-example/main/monitoring/configs/dashboards/cluster.json
@@ -311,18 +277,42 @@ spec:
           gnetId: 11454
           revision: 14
           datasource: Prometheus
-      nginx:
-        nginx:
-          url: https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/grafana/dashboards/nginx.json
+      storage:
+        etcd-storage:
+          # renovate: depName="etcd"
+          gnetId: 22236
+          revision: 1
+          datasource:
+            - { name: DS_VICTORIAMETRICS, value: Prometheus }
+        minio:
+          # renovate: depName="MinIO Dashboard"
+          gnetId: 13502
+          revision: 26
+          datasource:
+            - name: DS_PROMETHEUS
+              value: Prometheus
+      system:
+        node-exporter-full:
+          # renovate: depName="Node Exporter Full"
+          gnetId: 1860
+          revision: 36
           datasource: Prometheus
-        nginx-request-handling-performance:
-          url: https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/grafana/dashboards/request-handling-performance.json
-          datasource: Prometheus
-      prometheus:
-        prometheus:
-          # renovate: depName="Prometheus"
-          gnetId: 19105
-          revision: 3
+        smartctl-exporter:
+          # renovate: depName="SMARTctl Exporter Dashboard"
+          gnetId: 22604
+          revision: 1
+          datasource:
+            - name: DS_PROMETHEUS
+              value: Prometheus
+        spegel:
+          # renovate: depName="Spegel"
+          gnetId: 18089
+          revision: 1
+          datasource:
+            - name: DS_PROMETHEUS
+              value: Prometheus
+        node-feature-discovery:
+          url: https://raw.githubusercontent.com/kubernetes-sigs/node-feature-discovery/master/examples/grafana-dashboard.json
           datasource: Prometheus
     sidecar:
       dashboards:
@@ -363,7 +353,7 @@ spec:
       limits:
         memory: 512Mi
       requests:
-        cpu: 50m
+        cpu: 25m
         memory: 128Mi
     testFramework:
       enabled: false
