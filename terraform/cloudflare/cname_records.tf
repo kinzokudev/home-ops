@@ -30,7 +30,7 @@ resource "cloudflare_dns_record" "mc" {
   proxied = false
   ttl = 1
   type = "CNAME"
-  content = module.onepassword_cloudflare.fields["MC_PLAYIT_IP"]
+  content = "variety-enhancement.gl.at.ply.gg"
   zone_id = module.onepassword_cloudflare.fields["CLOUDFLARE_ZONE_ID"]
 }
 
