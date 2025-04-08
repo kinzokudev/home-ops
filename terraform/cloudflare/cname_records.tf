@@ -1,3 +1,30 @@
+resource "cloudflare_dns_record" "main" {
+  name = "@"
+  proxied = true
+  ttl = 1
+  type = "CNAME"
+  content = "kinzokudev.github.io"
+  zone_id = module.onepassword_cloudflare.fields["CLOUDFLARE_ZONE_ID"]
+}
+
+resource "cloudflare_dns_record" "www_main" {
+  name = "www"
+  proxied = true
+  ttl = 1
+  type = "CNAME"
+  content = "kinzokudev.github.io"
+  zone_id = module.onepassword_cloudflare.fields["CLOUDFLARE_ZONE_ID"]
+}
+
+resource "cloudflare_dns_record" "blog" {
+  name = "blog"
+  proxied = true
+  ttl = 1
+  type = "CNAME"
+  content = "kinzokudev.github.io"
+  zone_id = module.onepassword_cloudflare.fields["CLOUDFLARE_ZONE_ID"]
+}
+
 resource "cloudflare_dns_record" "mc" {
   name = "mc"
   proxied = false
