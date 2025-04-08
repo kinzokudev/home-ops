@@ -28,5 +28,5 @@ module "onepassword_cloudflare" {
 }
 
 provider "cloudflare" {
-  api_token = module.onepassword_cloudflare.fields["CLOUDFLARE_API_KEY"]
+  api_token = module.onepassword_cloudflare.fields["CLOUDFLARE_API_TOKEN_TF"]
 }
