@@ -1,0 +1,59 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app convertx
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      strategy: rollback
+      retries: 3
+  values:
+    controllers:
+      convertx:
+        replicas: 1
+        strategy: RollingUpdate
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          app:
+            image:
+              repository: ghcr.io/c4illin/convertx
+              tag: v0.12.1@sha256:d54b3deb00f990d90ccd18b5340d9ba91da209e5d8ccc670203f5dd342acf672
+            envFrom:
+              - secretRef:
+                  name: convertx-secret
+    service:
+      app:
+        controller: *app
+        ports:
+          http:
+            port: 3000
+    ingress:
+      app:
+        className: external
+        annotations:
+          external-dns.alpha.kubernetes.io/target: external.kinzoku.dev
+        hosts:
+          - host: convert.kinzoku.dev
+            paths:
+              - path: /
+                service:
+                  identifier: app
+                  port: http
+    persistence:
+      data:
+        type: nfs
+        server: singularity.internal
+        path: /mnt/data/kube/convertx
+        globalMounts:
+          - path: /app/data
