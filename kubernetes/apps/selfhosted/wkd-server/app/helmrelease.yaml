@@ -24,17 +24,17 @@ spec:
         strategy: RollingUpdate
         annotations:
           reloader.stakater.com/auto: "true"
-        # containers:
-        #   app:
-        #     image:
-        #       repository:
-        #       tag:
-    # service:
-    #   app:
-    #     controller: *app
-    #     ports:
-    #       http:
-    #         port:
+        containers:
+          app:
+            image:
+              repository: docker.io/nginx
+              tag: 1.27.4-alpine@sha256:4ff102c5d78d254a6f0da062b3cf39eaf07f01eec0927fd21e219d0af8bc0591
+    service:
+      app:
+        controller: *app
+        ports:
+          http:
+            port: 80
     ingress:
       app:
         className: external
