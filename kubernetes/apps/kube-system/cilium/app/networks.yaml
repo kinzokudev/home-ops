@@ -7,7 +7,9 @@ metadata:
 spec:
   allowFirstLastIPs: "No"
   blocks:
-    - cidr: "192.168.40.0/24"
+    # - cidr: "192.168.40.0/24"
+    - start: "192.168.40.30"
+      stop: "192.168.40.60"
 ---
 # yaml-language-server: $schema=https://datreeio.github.io/CRDs-catalog/cilium.io/ciliuml2announcementpolicy_v2alpha1.json
 apiVersion: cilium.io/v2alpha1
