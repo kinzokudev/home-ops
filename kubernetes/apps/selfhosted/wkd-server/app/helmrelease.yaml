@@ -47,3 +47,10 @@ spec:
                 service:
                   identifier: app
                   port: http
+    persistence:
+      data:
+        type: nfs
+        server: singularity.internal
+        path: /mnt/data/kube/minio
+        globalMounts:
+          - path: /data
