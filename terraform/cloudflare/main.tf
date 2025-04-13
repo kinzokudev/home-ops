@@ -27,6 +27,12 @@ module "onepassword_cloudflare" {
   item = "cloudflare"
 }
 
+module "onepassword_creds" {
+  source = "github.com/joryirving/terraform-1password-item"
+  vault = data.onepassword_vault.secrets.name
+  item = "other_credentials"
+}
+
 provider "cloudflare" {
   api_token = module.onepassword_cloudflare.fields["CLOUDFLARE_API_TOKEN_TF"]
 }
