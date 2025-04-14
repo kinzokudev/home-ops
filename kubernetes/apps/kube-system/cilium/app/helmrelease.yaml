@@ -9,7 +9,7 @@ spec:
   interval: 1h
   url: https://helm.cilium.io
 ---
-# yaml-language-server: $schema=https://raw.githubusercontent.com/fluxcd-community/flux2-schemas/main/helmrelease-helm-v2.json
+# yaml-language-server: $schema=https://flux.jank.ing/helmrelease/v2/github/cilium/cilium/v1.17.2/install/kubernetes/cilium
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
@@ -35,6 +35,7 @@ spec:
     - kind: ConfigMap
       name: cilium-values
   values:
+    bgpControlPlane:
     hubble:
       enabled: true
       metrics:

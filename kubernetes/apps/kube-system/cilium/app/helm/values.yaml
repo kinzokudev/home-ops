@@ -15,8 +15,8 @@ cgroup:
 # devices: eno+ eth+
 endpointRoutes:
   enabled: true
-envoy:
-  enabled: false
+# envoy:
+#   enabled: false
 dashboards:
   enabled: true
 hubble:
