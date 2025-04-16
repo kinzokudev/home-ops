@@ -1,55 +1,4 @@
 ---
-autoDirectNodeRoutes: true
-bpf:
-  masquerade: true
-  # Ref: https://github.com/siderolabs/talos/issues/10002
-  hostLegacyRouting: true
-cni:
-  # Required for pairing with Multus CNI
-  exclusive: false
-cgroup:
-  automount:
-    enabled: false
-  hostRoot: /sys/fs/cgroup
-# NOTE: devices might need to be set if you have more than one active NIC on your hosts
-# devices: eno+ eth+
-endpointRoutes:
-  enabled: true
-# envoy:
-#   enabled: false
-dashboards:
-  enabled: true
-hubble:
-  enabled: false
-ipam:
-  mode: kubernetes
-ipv4NativeRoutingCIDR: "10.42.0.0/16"
-k8sServiceHost: 127.0.0.1
-k8sServicePort: 7445
-kubeProxyReplacement: true
-kubeProxyReplacementHealthzBindAddr: 0.0.0.0:10256
-l2announcements:
-  enabled: true
-loadBalancer:
-  algorithm: maglev
-  mode: "dsr"
-localRedirectPolicy: true
-operator:
-  dashboards:
-    enabled: true
-  prometheus:
-    enabled: true
-    serviceMonitor:
-      enabled: true
-  replicas: 1
-  rollOutPods: true
-prometheus:
-  enabled: true
-  serviceMonitor:
-    enabled: true
-    trustCRDsExist: true
-rollOutCiliumPods: true
-routingMode: native
 securityContext:
   capabilities:
     ciliumAgent:
@@ -70,5 +19,87 @@ securityContext:
       - NET_ADMIN
       - SYS_ADMIN
       - SYS_RESOURCE
+cgroup:
+  automount:
+    enabled: false
+  hostRoot: /sys/fs/cgroup
+cluster:
+  name: "andromeda"
+  id: 1
+routingMode: native
+# devices: ''
+autoDirectNodeRoutes: true
+# ipv4NativeRoutingCIDR: "10.42.0.0/16"
+ipv4NativeRoutingCIDR: "${IP_POD_CIDR_V4}"
+endpointRoutes:
+  enabled: true
+loadBalancer:
+  algorithm: maglev
+  mode: dsr
+ipam:
+  mode: kubernetes
+kubeProxyReplacement: true
+k8sServiceHost: "127.0.0.1"
+k8sServicePort: "7445"
+kubeProxyReplacementHealthzBindAddr: "0.0.0.0:10256"
+enableIPv4Masquerade: false
+directRoutingSkipUnreachable: true
+bpf:
+  # masquerade: true
+  # Ref: https://github.com/siderolabs/talos/issues/10002
+  # hostLegacyRouting: true
+  tproxy: true
+  preallocateMaps: true
+  policyMapMax: 40960
+l7Proxy: true
 socketLB:
+  enabled: true
   hostNamespaceOnly: true
+enableIPv4BIGTCP: true
+enableIPv6BIGTCP: true
+bandwidthManager:
+  enabled: true
+  bbr: true
+localRedirectPolicy: true
+nodePort:
+  enabled: false
+cni:
+  exclusive: false
+rollOutCiliumPods: true
+operator:
+  # dashboards:
+  #   enabled: true
+  # prometheus:
+  #   enabled: true
+  #   serviceMonitor:
+  #     enabled: true
+  # replicas: 1
+  # rollOutPods: true
+  rollOutPods: true
+externalIPs:
+  enabled: true
+l2announcements:
+  enabled: true
+bgpControlPlane:
+  enabled: true
+hubble:
+  enabled: true
+  peerService:
+    clusterDomain: cluster.local
+  relay:
+    enabled: true
+    rollOutPods: true
+  ui:
+    enabled: true
+    rollOutPods: true
+# NOTE: devices might need to be set if you have more than one active NIC on your hosts
+# devices: eno+ eth+
+# envoy:
+#   enabled: false
+# dashboards:
+#   enabled: true
+# prometheus:
+#   enabled: true
+#   serviceMonitor:
+#     enabled: true
+#     trustCRDsExist: true
