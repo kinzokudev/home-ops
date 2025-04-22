@@ -1,0 +1,59 @@
+---
+# yaml-language-server: $schema=https://crds.jank.ing/cilium.io/ciliumbgpclusterconfig_v2alpha1.json
+apiVersion: cilium.io/v2alpha1
+kind: CiliumBGPClusterConfig
+metadata:
+  name: bgp-loadbalancer-ip-main
+spec:
+  nodeSelector:
+    matchLabels:
+      kubernetes.io/os: "linux" # match all Linux nodes, change this to match more granularly if more than 1 PeeringPolicy is to be used throughout cluster
+  bgpInstances:
+    - name: ciel
+      localASN: 65000 # ASNs are processed in uint32
+      peers:
+        - name: ciel
+          peerAddress: 192.168.40.1
+          peerASN: 65000
+          peerConfigRef:
+            name: ciel
+---
+# yaml-language-server: $schema=https://crds.jank.ing/cilium.io/ciliumbgppeerconfig_v2alpha1.json
+apiVersion: cilium.io/v2alpha1
+kind: CiliumBGPPeerConfig
+metadata:
+  name: ciel
+spec:
+  # authSecretRef: cilium-bgp-password-router
+  gracefulRestart:
+    enabled: true
+    restartTimeSeconds: 120
+  families:
+    - afi: ipv4
+      safi: unicast
+      advertisements:
+        matchLabels:
+          bgp.home.arpa/peer: ciel
+    - afi: ipv6
+      safi: unicast
+      advertisements:
+        matchLabels:
+          bgp.home.arpa/peer: ciel
+---
+# yaml-language-server: $schema=https://crds.jank.ing/cilium.io/ciliumbgpadvertisement_v2alpha1.json
+apiVersion: cilium.io/v2alpha1
+kind: CiliumBGPAdvertisement
+metadata:
+  name: ciel
+  labels:
+    bgp.home.arpa/peer: ciel
+spec:
+  advertisements:
+    - advertisementType: PodCIDR # no masquerade
+    - advertisementType: Service
+      service:
+        addresses: [LoadBalancerIP]
+      selector:
+        matchExpressions:
+          - {key: io.cilium/bgp, operator: NotIn, values: ["deny", "false"]}
+          - {key: io.cilium/internal, operator: NotIn, values: ["true"]}
