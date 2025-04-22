@@ -13,3 +13,4 @@ resources:
   - ./spegel/ks.yaml
   - ./descheduler/ks.yaml
   - ./csi-driver-nfs/ks.yaml
+  - ./reflector/ks.yaml
