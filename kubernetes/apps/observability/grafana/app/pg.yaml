@@ -39,8 +39,6 @@ spec:
     initdb:
       database: grafana
       owner: grafana
-      secret:
-        name: grafana-postgres-user
       postInitSQL:
         - CREATE EXTENSION IF NOT EXISTS "vectors";
         - CREATE EXTENSION IF NOT EXISTS "cube" CASCADE;
