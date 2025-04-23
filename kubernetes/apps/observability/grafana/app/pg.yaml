@@ -24,16 +24,16 @@ spec:
   backup:
     retentionPolicy: "14d"
     barmanObjectStore:
-      destinationPath: s3://kashs-cnpg-backups
-      endpointURL: https://s3.us-west-004.backblazeb2.com
+      destinationPath: s3://cnpg-backups
+      endpointURL: https://s3.kinzoku.dev
       wal:
         compression: bzip2
       s3Credentials:
         accessKeyId:
-          name: grafana-backup-secret
+          name: cnpg-backup-secret
           key: AWS_ACCESS_KEY_ID
         secretAccessKey:
-          name: grafana-backup-secret
+          name: cnpg-backup-secret
           key: AWS_SECRET_ACCESS_KEY
   bootstrap:
     initdb:
