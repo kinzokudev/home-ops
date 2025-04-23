@@ -2,7 +2,7 @@
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
-  name: grafana-db
+  name: grafana-pg
 spec:
   instances: 1
   imageName: ghcr.io/tensorchord/cloudnative-pgvecto.rs:14.11-v0.2.1
@@ -49,9 +49,8 @@ spec:
 apiVersion: postgresql.cnpg.io/v1
 kind: ScheduledBackup
 metadata:
-  name: daily-backup
-  namespace: database
+  name: grafana-pg-backup
 spec:
   schedule: "@daily"
   cluster:
-    name: app-db
+    name: grafana-pg
