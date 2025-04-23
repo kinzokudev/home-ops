@@ -52,5 +52,6 @@ metadata:
   name: grafana-pg-backup
 spec:
   schedule: "@daily"
+  immediate: true
   cluster:
     name: grafana-pg
