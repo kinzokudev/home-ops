@@ -23,7 +23,7 @@ data:
               href: 'https://youtube.com/feed/subscriptions'
         - Navidrome:
             - icon: sh-navidrome
-              href: 'https://navidrome-prod-01.kinzoku.dev'
+              href: 'https://navidrome.kinzoku.dev'
     - Dev:
         - kubesearch:
             - icon: kubernetes-dashboard.png
