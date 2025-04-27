@@ -1,0 +1,24 @@
+---
+kubeStateMetrics:
+  enabled: true
+kube-state-metrics:
+  metricLabelsAllowlist:
+    - deployments=[*]
+    - persistentvolumeclaims=[*]
+    - pods=[*]
+  prometheus:
+    monitor:
+      enabled: true
+      # interval: "10s"
+      # scrapeTimeout: "5s"
+      relabelings:
+        # replaces other node identifiers with hostname
+        - action: replace
+          sourceLabels: [__meta_kubernetes_pod_node_name]
+          regex: ^(.*)$
+          replacement: $1
+          targetLabel: kubernetes_node
+  resources:
+    requests:
+      cpu: 15m
+      memory: 128Mi

@@ -1,0 +1,70 @@
+---
+prometheus:
+  enabled: false
+  externalUrl: https://prom.kinzoku.dev/
+  ingress:
+    enabled: false
+    ingressClassName: internal
+    hosts: &hostprom [prom.kinzoku.dev]
+    tls:
+      - {hosts: *hostprom}
+    paths: [/]
+    pathType: Prefix
+  prometheusSpec:
+    # Prometheus resource allocation
+    # TODO: set default intervals to debug memory spikes
+    scrapeInterval: 60s
+    # scrapeInterval: "30s"
+    # scrapeTimeout: "15s"
+    replicas: 0  # 3
+    retention: 14d
+    retentionSize: 30GB
+    walCompression: true
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: openebs-hostpath
+          resources:
+            requests:
+              storage: 35Gi
+    resources:
+      requests:
+        cpu: 250m
+        memory: 2Gi
+    # scheduling
+    topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: DoNotSchedule
+        labelSelector:
+          matchLabels:
+            prometheus: kps
+    # don't use labels from this KPS deployment for labelSelector of these Prometheus resources
+    ruleSelectorNilUsesHelmValues: false
+    serviceMonitorSelectorNilUsesHelmValues: false
+    podMonitorSelectorNilUsesHelmValues: false
+    probeSelectorNilUsesHelmValues: false
+    scrapeConfigSelectorNilUsesHelmValues: false
+    # enable features
+    enableAdminAPI: true
+    enableFeatures:
+      - auto-gomaxprocs
+      - memory-snapshot-on-shutdown
+      - new-service-discovery-manager
+    externalLabels:
+      cluster: andromeda
+    replicaExternalLabelName: __replica__  # must match with thanos value `.query.replicaLabel[0]`
+    # image:  # testing out dedupe labels https://github.com/prometheus/prometheus/releases/tag/v2.51.0-rc.0%2Bdedupelabels
+    #   registry: quay.io
+    #   repository: prometheus/prometheus
+    #   tag: v2.51.0-rc.0-dedupelabels
+    # external AlertManager (non-KPS)
+    alertingEndpoints:
+      - apiVersion: v2
+        name: alertmanager
+        namespace: monitoring
+        port: 9093
+      - apiVersion: v2
+        name: alertmanager-local
+        namespace: monitoring
+        port: 9093
