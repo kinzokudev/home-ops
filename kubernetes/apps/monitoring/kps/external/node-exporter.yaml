@@ -1,0 +1,56 @@
+---
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: ScrapeConfig
+metadata:
+  name: &name node-exporter
+spec:
+  staticConfigs:
+    - targets:
+        - singularity.internal:9100
+        - wormhole.internal:9100
+        - kuiper.internal:9100
+  metricsPath: /metrics
+  relabelings:
+    - action: replace
+      targetLabel: job
+      replacement: *name
+---
+# yaml-language-server: $schema=https://crds.jank.ing/monitoring.coreos.com/prometheusrule_v1.json
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: low-battery
+spec:
+  groups:
+    - name: low-battery.rules
+      rules:
+        - alert: BatteryLow15To20
+          annotations:
+            summary: >-
+              {{ $labels.instance }} battery
+              is low, between 15% to 20%.
+          expr: |
+            node_power_supply_capacity >= 15 <= 20
+          for: 2m
+          labels:
+            severity: critical
+        - alert: BatteryLow10To15
+          annotations:
+            summary: >-
+              {{ $labels.instance }} battery
+              is low, between 10% to 15%.
+          expr: |
+            node_power_supply_capacity >= 10 <= 15
+          for: 2m
+          labels:
+            severity: critical
+        - alert: BatteryLow5To10
+          annotations:
+            summary: >-
+              {{ $labels.instance }} battery
+              is low, between 5% to 10%.
+          expr: |
+            node_power_supply_capacity >= 5 <= 10
+          for: 2m
+          labels:
+            severity: critical

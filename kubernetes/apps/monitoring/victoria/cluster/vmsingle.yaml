@@ -1,0 +1,51 @@
+---
+# yaml-language-server: $schema=https://crds.jank.ing/operator.victoriametrics.com/vmsingle_v1beta1.json
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMSingle
+metadata:
+  name: victoria
+spec:
+  useStrictSecurity: true
+  retentionPeriod: '6'  # months if no unit specified
+  extraArgs:
+    dedup.minScrapeInterval: 60s
+    maxLabelsPerTimeseries: '40'
+    search.minStalenessInterval: 5m
+    vmalert.proxyURL: http://vmalert-victoria.monitoring.svc.cluster.local.:8080
+  storage:
+    storageClassName: openebs-hostpath
+    accessModes: [ReadWriteOnce]
+    resources:
+      requests:
+        storage: 50Gi
+  resources:
+    requests:
+      cpu: 200m
+---
+# yaml-language-server: $schema=https://crds.jank.ing/operator.victoriametrics.com/vmsingle_v1beta1.json
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMSingle
+metadata:
+  name: alerts
+spec:
+  useStrictSecurity: true
+  retentionPeriod: 2d
+  extraArgs:
+    dedup.minScrapeInterval: 60s
+    maxLabelsPerTimeseries: '40'
+    search.minStalenessInterval: 5m
+    storageDataPath: &path /vmdata
+    vmalert.proxyURL: http://vmalert-victoria.monitoring.svc.cluster.local.:8080
+  volumes:
+    - name: &vol vmsingle-data
+      emptyDir:
+        # medium: Memory
+        # sizeLimit: 2Gi
+        sizeLimit: 5Gi
+  volumeMounts:
+    - name: *vol
+      mountPath: *path
+  terminationGracePeriodSeconds: 60
+  resources:
+    requests:
+      cpu: 200m

@@ -1,0 +1,67 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s/helm-charts/app-template-3.7.3/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app fluentbit
+spec:
+  interval: 30m
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+  values:
+    controllers:
+      main:
+        type: daemonset
+        serviceAccount:
+          name: fluentbit
+        containers:
+          main:
+            image:
+              repository: cr.fluentbit.io/fluent/fluent-bit
+              tag: 4.0.1@sha256:6ed008616796375fc6e22102d88e1336c12b995c7d3a741d486ed8d1afb707d3
+            args: [--config=/config/fluent-bit.yaml]
+            env:
+              TZ: America/New_York
+              KUBE_NODE_IP:
+                valueFrom:
+                  fieldRef:
+                    fieldPath: status.hostIP
+            securityContext:
+              readOnlyRootFilesystem: true
+              allowPrivilegeEscalation: false
+              capabilities:
+                drop: [ALL]
+            resources:
+              requests:
+                cpu: 10m
+    persistence:
+      config:
+        type: configMap
+        name: fluentbit-config
+      logs-containers:
+        type: hostPath
+        hostPath: &path /var/log/containers
+        globalMounts:
+          - path: *path
+      logs-pods:
+        type: hostPath
+        hostPath: &path /var/log/pods
+        globalMounts:
+          - path: *path
+    defaultPodOptions:
+      automountServiceAccountToken: true
+      enableServiceLinks: true
+      securityContext:
+        runAsUser: 0
+        runAsGroup: 0
+        fsGroup: 0
+        fsGroupChangePolicy: Always
+        seccompProfile: {type: RuntimeDefault}
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: DoNotSchedule
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: *app

@@ -1,0 +1,200 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app alertmanager
+spec:
+  interval: 30m
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+  values:
+    controllers:
+      main:
+        type: deployment
+        replicas: 1
+        # annotations:
+        #   reloader.stakater.com/auto: "true"
+        # statefulset:
+        #   volumeClaimTemplates:
+        #     - name: storage
+        #       accessMode: ReadWriteOnce
+        #       size: 50Mi
+        #       storageClass: openebs-hostpath
+        #       globalMounts:
+        #         - path: /alertmanager
+        containers: &ct
+          main:
+            image:
+              repository: quay.io/prometheus/alertmanager
+              tag: v0.28.1@sha256:27c475db5fb156cab31d5c18a4251ac7ed567746a2483ff264516437a39b15ba
+            args:
+              - --config.file=/etc/alertmanager/alertmanager.yaml
+              - --storage.path=/alertmanager
+              - --data.retention=336h
+              - --web.external-url=https://am.kinzoku.dev/
+              - --web.route-prefix=/
+              - --web.listen-address=:9093
+              - --cluster.listen-address=[$(POD_IP)]:9094
+              - --cluster.advertise-address=$(POD_IP):9094
+              - --cluster.label=andromeda
+              - --cluster.peer=alertmanager.monitoring.svc.cluster.local:9094
+              - --cluster.peer=alertmanager-local-0.monitoring.svc.cluster.local:9094
+              - --cluster.peer=alertmanager-local-1.monitoring.svc.cluster.local:9094
+              - --cluster.peer=alertmanager-local-2.monitoring.svc.cluster.local:9094
+              - --cluster.reconnect-timeout=1h
+            env:
+              TZ: America/New_York
+              POD_IP:
+                valueFrom:
+                  fieldRef:
+                    apiVersion: v1
+                    fieldPath: status.podIP
+            ports:
+              - name: http
+                containerPort: 9093
+            securityContext:
+              readOnlyRootFilesystem: true
+              allowPrivilegeEscalation: false
+              capabilities:
+                drop: [ALL]
+            resources:
+              requests:
+                cpu: 10m
+                memory: 128Mi
+            probes:
+              readiness:
+                enabled: true
+                custom: true
+                spec: &ready
+                  httpGet:
+                    path: /-/ready
+                    port: http
+                    scheme: HTTP
+                  initialDelaySeconds: 3
+                  periodSeconds: 5
+                  timeoutSeconds: 3
+                  successThreshold: 1
+                  failureThreshold: 10
+              startup:
+                enabled: true
+                custom: true
+                spec:
+                  <<: *ready
+                  periodSeconds: 1
+                  failureThreshold: 60
+              liveness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /-/healthy
+                    port: http
+                    scheme: HTTP
+                  periodSeconds: 10
+                  timeoutSeconds: 3
+                  successThreshold: 1
+                  failureThreshold: 10
+      local:
+        type: statefulset
+        replicas: 3
+        containers: *ct
+        statefulset:
+          volumeClaimTemplates:
+            - name: data
+              size: 2Gi
+              storageClass: openebs-hostpath
+              accessMode: ReadWriteOnce
+              advancedMounts:
+                main:
+                  - path: /alertmanager
+    service:
+      main:
+        controller: main
+        ports: &ports
+          http:
+            port: 9093
+          cluster:
+            port: 9094
+      local: &svc
+        controller: local
+        ports: *ports
+      local-0:
+        <<: *svc
+        extraSelectorLabels:
+          apps.kubernetes.io/pod-index: '0'
+      local-1:
+        <<: *svc
+        extraSelectorLabels:
+          apps.kubernetes.io/pod-index: '1'
+      local-2:
+        <<: *svc
+        extraSelectorLabels:
+          apps.kubernetes.io/pod-index: '2'
+    ingress:
+      main:
+        className: external
+        annotations:
+          external-dns.alpha.kubernetes.io/target: external.kinzoku.dev
+        hosts:
+          - host: am.kinzoku.dev
+            paths:
+              - path: /
+                service:
+                  identifier: local
+                  port: http
+    persistence:
+      data:
+        type: nfs
+        server: singularity.internal
+        path: /mnt/data/kube/alertmanager
+        advancedMounts:
+          main:
+            main:
+              - subPath: data
+                path: /alertmanager
+      config:
+        type: configMap
+        name: alertmanager-config
+        globalMounts:
+          - path: /etc/alertmanager
+      secrets:
+        type: secret
+        name: alertmanager-secret
+        globalMounts:
+          - path: /secrets
+    defaultPodOptions:
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 3000
+        runAsGroup: 3000
+        fsGroup: 3000
+        fsGroupChangePolicy: Always
+        seccompProfile: {type: RuntimeDefault}
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: DoNotSchedule
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: *app
+              app.kubernetes.io/component: local
+      dnsConfig:
+        options:
+          - name: ndots
+            value: '1'
+    serviceMonitor:
+      main:
+        selector:
+          matchLabels:
+            app.kubernetes.io/name: *app
+        endpoints:
+          - port: http
+            scheme: http
+            enableHttp2: true
+            path: /metrics
+            interval: 1m
+            scrapeTimeout: 30s

@@ -1,0 +1,46 @@
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app grafana
+  namespace: &namespace monitoring
+spec:
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  components: [../../../../components/gatus/external]
+  interval: 1h
+  dependsOn:
+    - name: cloudnative-pg
+      namespace: database
+  path: ./kubernetes/apps/monitoring/grafana/app
+  prune: true
+  retryInterval: 2m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: *namespace
+  timeout: 5m
+  wait: false
+  postBuild:
+    substitute:
+      APP: *app
+  patches:
+    - target:
+        kind: HelmRelease
+        name: grafana
+      patch: |-
+        apiVersion: helm.toolkit.fluxcd.io/v2
+        kind: HelmRelease
+        metadata:
+          name: grafana
+        spec:
+          values:
+            ingress:
+              annotations:
+                gethomepage.dev/enabled: "true"
+                gethomepage.dev/icon: grafana.png
+                gethomepage.dev/name: Grafana
+                gethomepage.dev/group: monitoring
+                gethomepage.dev/description: Monitoring Dashboards
