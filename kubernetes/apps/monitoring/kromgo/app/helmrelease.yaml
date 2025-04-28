@@ -3,7 +3,7 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: kromgo
+  name: &app kromgo
 spec:
   interval: 30m
   chartRef:
@@ -12,76 +12,65 @@ spec:
   values:
     controllers:
       kromgo:
-        replicas: 1
+        type: deployment
+        replicas: 2
         strategy: RollingUpdate
         annotations:
           reloader.stakater.com/auto: 'true'
-        pod:
-          securityContext:
-            runAsUser: 2000
-            runAsGroup: 2000
-            runAsNonRoot: true
-          topologySpreadConstraints:
-            - maxSkew: 1
-              topologyKey: kubernetes.io/hostname
-              whenUnsatisfiable: DoNotSchedule
-              labelSelector:
-                matchLabels:
-                  app.kubernetes.io/name: kromgo
         containers:
-          kromgo:
+          main:
             image:
               repository: ghcr.io/kashalls/kromgo
-              tag: v0.5.1
+              tag: v0.6.0@sha256:4b908ea0be5acd61e67ce38d8f1342d0731296b00b8ca2c35533aa519d804cc6
             env:
-              PROMETHEUS_URL: http://kube-prometheus-stack-prometheus.monitoring.svc.cluster.local:9090
-              SERVER_HOST: 0.0.0.0
-              SERVER_PORT: &port 8080
-              HEALTH_HOST: 0.0.0.0
-              HEALTH_PORT: &hport 8888
-            probes:
-              liveness: &probes
-                enabled: true
-                custom: true
-                spec:
-                  httpGet:
-                    path: /readyz
-                    port: *hport
-                  initialDelaySeconds: 0
-                  periodSeconds: 10
-                  timeoutSeconds: 1
-                  failureThreshold: 3
-              readiness: *probes
+              TZ: America/New_York
+              PROMETHEUS_URL: http://vmsingle-victoria.monitoring.svc.cluster.local:8429
+              SERVER_HOST: &host '[::]'
+              SERVER_PORT: &http 8080
+              HEALTH_HOST: *host
+              HEALTH_PORT: &health 8888
             securityContext:
-              allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
+              allowPrivilegeEscalation: false
               capabilities:
                 drop: [ALL]
             resources:
               requests:
-                cpu: 5m
-                memory: 10M
-              limits:
-                memory: 64M
+                cpu: 10m
+            probes:
+              liveness:
+                enabled: true
+                custom: true
+                spec: &probes
+                  httpGet:
+                    path: /-/health
+                    port: *health
+                  initialDelaySeconds: 0
+                  periodSeconds: 10
+                  timeoutSeconds: 1
+                  failureThreshold: 3
+              readiness:
+                enabled: true
+                custom: true
+                spec:
+                  <<: *probes
+                  httpGet:
+                    path: /-/ready
+                    port: *health
     service:
-      app:
+      kromgo:
         controller: kromgo
         ports:
           http:
-            primary: true
-            port: *port
+            port: *http
+            protocol: HTTP
+            appProtocol: http
           health:
-            port: *hport
-    persistence:
-      config-file:
-        type: configMap
-        name: kromgo-configmap
-        globalMounts:
-          - path: /kromgo/config.yaml
-            subPath: config.yaml
-            readOnly: true
+            port: *health
+            protocol: HTTP
+            appProtocol: http
     ingress:
-      app:
+      main:
         className: external
         annotations:
           external-dns.alpha.kubernetes.io/target: external.kinzoku.dev
@@ -90,5 +79,30 @@ spec:
             paths:
               - path: /
                 service:
-                  identifier: app
+                  identifier: kromgo
                   port: http
+    persistence:
+      config:
+        type: configMap
+        name: kromgo-config
+        globalMounts:
+          - path: /kromgo/config.yaml
+            subPath: config.yaml
+            readOnly: true
+    defaultPodOptions:
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: &uid 568
+        runAsGroup: *uid
+        fsGroup: *uid
+        fsGroupChangePolicy: Always
+        seccompProfile: {type: RuntimeDefault}
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: DoNotSchedule
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: *app

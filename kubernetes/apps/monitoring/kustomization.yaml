@@ -13,7 +13,7 @@ resources:
   - ./gatus/ks.yaml
   - ./grafana/ks.yaml
   - ./karma/ks.yaml
-  # - ./kromgo/ks.yaml
+  - ./kromgo/ks.yaml
   # - ./kube-state-metrics/ks.yaml
   - ./kps/ks.yaml
   # - ./loki/ks.yaml
