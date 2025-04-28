@@ -5,7 +5,9 @@ kind: Kustomization
 namespace: flux-system
 components:
   - ../../components/common
+  - ../../components/repos/app-template
 resources:
   - ./flux-instance/ks.yaml
   - ./flux-operator/ks.yaml
   - ./tofu-controller/ks.yaml
+  - ./k8s-schemas/ks.yaml

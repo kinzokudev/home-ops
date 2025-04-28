@@ -1,0 +1,150 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s/helm-charts/app-template-3.7.3/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app k8s-schemas
+spec:
+  interval: 30m
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      strategy: rollback
+      retries: 3
+  values:
+    controllers:
+      extract:
+        type: cronjob
+        cronjob:
+          schedule: "0 * * * *"
+          concurrencyPolicy: Replace
+        annotations:
+          reloader.stakater.com/auto: "true"
+        pod:
+          automountServiceAccountToken: true
+        initContainers:
+          01-extract:
+            image:
+              repository: "jank.ing/jjgadgets/k8s-crd-extractor"
+              tag: "20250130@sha256:bdc7554fa5941bc901e345511f0165a9838e52e610918a0eb1c2c195b0530ab1"
+            env:
+              TZ: "America/New_York"
+              HOME: ""
+            securityContext: &sc
+              readOnlyRootFilesystem: true
+              allowPrivilegeEscalation: false
+              capabilities:
+                drop: ["ALL"]
+            resources:
+              requests:
+                cpu: 10m
+                memory: 128Mi
+        containers:
+          rclone-b2: &rclone
+            image: &rcimg
+              repository: "jank.ing/jjgadgets/rclone"
+              tag: "1.69.0@sha256:cb11048380b069916542e041e28385ca4f4fd7df54f29d59fa79dc142f49852e"
+            args:
+              [
+                "sync",
+                "/.datree/crdSchemas/",
+                "b2:kinzokudev-k8s-schemas/",
+                "--progress",
+                "--fast-list",
+                "--checksum",
+              ]
+            env:
+              TZ: "America/New_York"
+            securityContext: *sc
+            resources:
+              requests:
+                cpu: 10m
+                memory: 128Mi
+      main:
+        type: daemonset
+        pod:
+          automountServiceAccountToken: false
+        containers:
+          main:
+            image: *rcimg
+            args:
+              [
+                "serve",
+                "http",
+                "b2:kinzokudev-k8s-schemas",
+                "--read-only",
+                "--no-modtime",
+                "--vfs-cache-mode",
+                "full",
+                "--cache-dir",
+                "/tmp/cache",
+                "--addr",
+                ":8080",
+              ]
+            securityContext: *sc
+            resources:
+              requests:
+                cpu: 10m
+                memory: 128Mi
+    serviceAccount:
+      create: true
+      name: *app
+    service:
+      main:
+        controller: main
+        ports:
+          http:
+            port: 8080
+    ingress:
+      main:
+        className: external
+        annotations:
+          external-dns.alpha.kubernetes.io/target: external.kinzoku.dev
+        hosts:
+          - host: schemas.kinzoku.dev
+            paths:
+              - path: /
+                service:
+                  identifier: main
+                  port: http
+    persistence:
+      config:
+        type: secret
+        name: k8s-schemas-rclone
+        globalMounts:
+          - path: "/.rclone.conf"
+            subPath: "rclone.conf"
+            readOnly: true
+      tmp:
+        type: emptyDir
+        medium: Memory
+        globalMounts:
+          - subPath: "tmp"
+            path: "/tmp"
+            readOnly: false
+          - subPath: "datree"
+            path: "/.datree"
+            readOnly: false
+    defaultPodOptions:
+      enableServiceLinks: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: &uid 1000
+        runAsGroup: *uid
+        fsGroup: *uid
+        fsGroupChangePolicy: "Always"
+        seccompProfile:
+          type: RuntimeDefault
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: DoNotSchedule
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: *app
