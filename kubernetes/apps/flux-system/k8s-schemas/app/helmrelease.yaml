@@ -22,7 +22,7 @@ spec:
       extract:
         type: cronjob
         cronjob:
-          schedule: "0 * * * *"
+          schedule: "*/5 * * * *"
           concurrencyPolicy: Replace
         annotations:
           reloader.stakater.com/auto: "true"
