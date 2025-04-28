@@ -5,6 +5,6 @@ kind: Kustomization
 resources:
   - ./externalsecret.yaml
   - ./ocirepo.yaml
-  - ./pg.yaml
+  # - ./pg.yaml
   - ./helmrelease.yaml
   - ./dashboard

@@ -8,7 +8,9 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
-  components: [../../../../components/gatus/external]
+  components:
+    - ../../../../components/gatus/external
+    - ../../../../components/postgres
   interval: 1h
   dependsOn:
     - name: cloudnative-pg
