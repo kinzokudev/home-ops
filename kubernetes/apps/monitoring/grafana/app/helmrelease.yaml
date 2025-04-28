@@ -17,28 +17,6 @@ spec:
     remediation:
       strategy: rollback
       retries: 3
-  dependsOn:
-    - name: kube-prometheus-stack
-      namespace: monitoring
-    - name: loki
-      namespace: monitoring
-  # valuesFrom:
-  #   - targetPath: grafana\.ini.database.host
-  #     kind: Secret
-  #     name: &secret grafana-pg-app
-  #     valuesKey: host
-  #   - targetPath: grafana\.ini.database.name
-  #     kind: Secret
-  #     name: *secret
-  #     valuesKey: dbname
-  #   - targetPath: grafana\.ini.database.user
-  #     kind: Secret
-  #     name: *secret
-  #     valuesKey: username
-  #   - targetPath: grafana\.ini.database.password
-  #     kind: Secret
-  #     name: *secret
-  #     valuesKey: password
   values:
     deploymentStrategy:
       type: Recreate
@@ -164,8 +142,6 @@ spec:
         deleteDatasources:
           - name: Alertmanager
             orgId: 1
-          - name: Loki
-            orgId: 1
           - name: Prometheus
             orgId: 1
         datasources:
@@ -176,10 +152,6 @@ spec:
             jsonData:
               prometheusType: Prometheus
             isDefault: true
-          - name: Loki
-            type: loki
-            access: proxy
-            url: http://loki-headless.monitoring.svc.cluster.local:3100
           - name: Alertmanager
             type: alertmanager
             access: proxy
@@ -192,27 +164,6 @@ spec:
         #   url: https://raw.githubusercontent.com/miniflux/v2/main/contrib/grafana/dashboard.json
         #   datasource: Prometheus
       data:
-        crunchy-pgbackrest:  # https://github.com/CrunchyData/postgres-operator-examples/issues/264
-          url: https://raw.githubusercontent.com/CrunchyData/postgres-operator-examples/main/kustomize/monitoring/grafana/dashboards/pgbackrest.json
-          datasource: Prometheus
-        crunchy-pod-details:
-          url: https://raw.githubusercontent.com/CrunchyData/postgres-operator-examples/main/kustomize/monitoring/grafana/dashboards/pod_details.json
-          datasource: Prometheus
-        crunchy-postgresql-details:
-          url: https://raw.githubusercontent.com/CrunchyData/postgres-operator-examples/main/kustomize/monitoring/grafana/dashboards/postgresql_details.json
-          datasource: Prometheus
-        crunchy-postgresql-overview:
-          url: https://raw.githubusercontent.com/CrunchyData/postgres-operator-examples/main/kustomize/monitoring/grafana/dashboards/postgresql_overview.json
-          datasource: Prometheus
-        crunchy-postgresql-service_health:
-          url: https://raw.githubusercontent.com/CrunchyData/postgres-operator-examples/main/kustomize/monitoring/grafana/dashboards/postgresql_service_health.json
-          datasource: Prometheus
-        crunchy-prometheus-alerts:
-          url: https://raw.githubusercontent.com/CrunchyData/postgres-operator-examples/main/kustomize/monitoring/grafana/dashboards/prometheus_alerts.json
-          datasource: Prometheus
-        crunchy-query-statistics:
-          url: https://raw.githubusercontent.com/CrunchyData/postgres-operator-examples/main/kustomize/monitoring/grafana/dashboards/query_statistics.json
-          datasource: Prometheus
         dragonfly:
           url: https://raw.githubusercontent.com/dragonflydb/dragonfly/refs/heads/main/tools/local/monitoring/grafana/provisioning/dashboards/dragonfly.json
           datasource: Prometheus
