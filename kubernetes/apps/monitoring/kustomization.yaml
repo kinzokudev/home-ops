@@ -8,18 +8,18 @@ components:
   - ../../components/repos/app-template
 resources:
   - ./alertmanager/ks.yaml
-  - ./blackbox-exporter/ks.yaml
   - ./fluentbit/ks.yaml
+  # - ./blackbox-exporter/ks.yaml
   - ./gatus/ks.yaml
   - ./grafana/ks.yaml
-  - ./kromgo/ks.yaml
-  - ./kube-state-metrics/ks.yaml
-  - ./kps/ks.yaml
-  - ./loki/ks.yaml
-  - ./node-exporter/ks.yaml
-  - ./prometheus-operator/ks.yaml
-  - ./promtail/ks.yaml
-  - ./silence-operator/ks.yaml
-  - ./smartctl-exporter/ks.yaml
   - ./karma/ks.yaml
+  # - ./kromgo/ks.yaml
+  # - ./kube-state-metrics/ks.yaml
+  - ./kps/ks.yaml
+  # - ./loki/ks.yaml
+  - ./node-exporter/ks.yaml
+  # - ./prometheus-operator/ks.yaml
+  # - ./promtail/ks.yaml
+  # - ./silence-operator/ks.yaml
+  - ./smartctl-exporter/ks.yaml
   - ./victoria/ks.yaml
