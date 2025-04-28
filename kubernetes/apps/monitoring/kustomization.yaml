@@ -9,6 +9,7 @@ components:
 resources:
   - ./alertmanager/ks.yaml
   - ./blackbox-exporter/ks.yaml
+  - ./fluentbit/ks.yaml
   - ./gatus/ks.yaml
   - ./grafana/ks.yaml
   - ./kromgo/ks.yaml
