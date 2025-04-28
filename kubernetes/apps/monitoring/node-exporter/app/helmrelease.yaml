@@ -11,41 +11,36 @@ spec:
     name: node-exporter
   values:
     fullnameOverride: node-exporter
-
-    image:
-      registry: quay.io
-      repository: prometheus/node-exporter
-
-    prometheus:
-      monitor:
-        enabled: true
-        jobLabel: app.kubernetes.io/instance
-
-        relabelings:
-          - action: replace
-            regex: (.*)
-            replacement: $1
-            sourceLabels:
-              - __meta_kubernetes_pod_node_name
-            targetLabel: kubernetes_node
-          - action: replace
-            regex: (.*)
-            replacement: $1
-            sourceLabels:
-              - __meta_kubernetes_pod_node_name
-            targetLabel: nodename
-          - action: replace
-            regex: (.*)
-            replacement: $1.internal:9100
-            sourceLabels:
-              - kubernetes_node
-            targetLabel: instance
-
+    hostNetwork: true
+    rbac:
+      pspEnabled: false
     resources:
       requests:
         cpu: 23m
         memory: 64M
-      limits:
-        memory: 64M
-
-    hostNetwork: false
+    image:
+      registry: quay.io
+      repository: prometheus/node-exporter
+    prometheus:
+      monitor:
+        enabled: true
+        # TODO: set default intervals to debug memory spikes
+        interval: 30s
+        scrapeTimeout: 15s
+        relabelings:
+          # replaces other node identifiers with hostname
+          - action: replace
+            regex: (.*)
+            replacement: $1
+            sourceLabels: [__meta_kubernetes_pod_node_name]
+            targetLabel: kubernetes_node
+          - action: replace
+            regex: (.*)
+            replacement: $1
+            sourceLabels: [__meta_kubernetes_pod_node_name]
+            targetLabel: nodename
+          - action: replace
+            regex: (.*)
+            replacement: $1.internal:9100
+            sourceLabels: [kubernetes_node]
+            targetLabel: instance
