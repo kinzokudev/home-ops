@@ -26,7 +26,6 @@ spec:
   postBuild:
     substitute:
       APP: *app
-      REPLICAS: '2'
   patches:
     - target:
         kind: HelmRelease
