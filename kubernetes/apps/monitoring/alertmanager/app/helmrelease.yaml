@@ -14,16 +14,8 @@ spec:
       main:
         type: deployment
         replicas: 1
-        # annotations:
-        #   reloader.stakater.com/auto: "true"
-        # statefulset:
-        #   volumeClaimTemplates:
-        #     - name: storage
-        #       accessMode: ReadWriteOnce
-        #       size: 50Mi
-        #       storageClass: openebs-hostpath
-        #       globalMounts:
-        #         - path: /alertmanager
+        annotations:
+          reloader.stakater.com/auto: 'true'
         containers: &ct
           main:
             image:
