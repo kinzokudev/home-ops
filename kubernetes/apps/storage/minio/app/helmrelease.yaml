@@ -92,7 +92,9 @@ spec:
             scrapeTimeout: 10s
     ingress:
       app:
-        className: internal
+        className: external
+        annotations:
+          external-dns.alpha.kubernetes.io/target: external.kinzoku.dev
         hosts:
           - host: "{{ .Release.Name }}.kinzoku.dev"
             paths:
