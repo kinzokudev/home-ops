@@ -11,7 +11,7 @@ spec:
     name: node-exporter
   values:
     fullnameOverride: node-exporter
-    hostNetwork: true
+    hostNetwork: false
     rbac:
       pspEnabled: false
     resources:
