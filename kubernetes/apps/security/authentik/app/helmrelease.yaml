@@ -203,26 +203,16 @@ spec:
             protocol: HTTPS
             appProtocol: https
     ingress:
-      internal: &ingress
-        className: internal
-        hosts:
-          - host: &host authentik.kinzoku.dev
-            paths:
-              - &path
-                path: /
-                pathType: Prefix
-                service:
-                  identifier: authentik
-                  port: http
-      external:
-        <<: *ingress
+      external: &ingress
         className: external
         annotations:
           external-dns.alpha.kubernetes.io/target: external.kinzoku.dev
         hosts:
-          - host: auth.kinzoku.dev
+          - host: &host auth.kinzoku.dev
             paths:
-              - <<: *path
+              - &path
+                path: /
+                pathType: Prefix
                 service:
                   identifier: authentik
                   port: http
@@ -244,7 +234,7 @@ spec:
       enableServiceLinks: false
       hostAliases:
         - ip: "192.168.40.16"
-          hostnames: ["authentik.kinzoku.dev"]
+          hostnames: ["auth.kinzoku.dev"]
       securityContext:
         runAsNonRoot: true
         runAsUser: &uid 1000
