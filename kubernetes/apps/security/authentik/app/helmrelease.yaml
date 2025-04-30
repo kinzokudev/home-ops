@@ -204,9 +204,7 @@ spec:
             appProtocol: https
     ingress:
       internal: &ingress
-        className: external
-        annotations:
-          nginx.ingress.kubernetes.io/whitelist-source-range: "10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 100.64.0.0/10"
+        className: internal
         hosts:
           - host: &host authentik.kinzoku.dev
             paths:
@@ -218,28 +216,16 @@ spec:
                   port: http
       external:
         <<: *ingress
+        className: external
         annotations:
           external-dns.alpha.kubernetes.io/target: external.kinzoku.dev
         hosts:
-          - host: *host
+          - host: auth.kinzoku.dev
             paths:
               - <<: *path
                 service:
                   identifier: authentik
                   port: anubis
-      harden:
-        <<: *ingress
-        annotations:
-          nginx.ingress.kubernetes.io/whitelist-source-range: "192.168.40.0/24"
-        hosts:
-          - host: *host
-            paths:
-              - <<: *path
-                path: /api/v3/policies/expression
-              - <<: *path
-                path: /api/v3/propertymappings
-              - <<: *path
-                path: /api/v3/managed/blueprints
     persistence:
       pg-ca:
         type: secret
