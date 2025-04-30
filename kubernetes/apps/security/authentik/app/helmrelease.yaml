@@ -171,6 +171,49 @@ spec:
                 <<: *worker-probe
                 spec:
                   <<: [*startup, *wps]
+      ldap:
+        type: deployment
+        replicas: 2
+        strategy: RollingUpdate
+        rollingUpdate:
+          unavailable: "90%"
+        pod:
+          topologySpreadConstraints:
+            - <<: *tsc
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: *app
+                  app.kubernetes.io/component: ldap
+        containers:
+          main:
+            image:
+              <<: *img
+              repository: ghcr.io/goauthentik/ldap
+              tag: 2025.2.4@sha256:cc98bc43e3713095097ae322df1ebd3b0ae76ecd0bd67ae7cd1e0375cce51b1b
+            env:
+              AUTHENTIK_HOST: "https://auth.kinzoku.dev"
+              AUTHENTIK_TOKEN:
+                valueFrom:
+                  secretKeyRef:
+                    name: authentik-tokens-secret
+                    key: AUTHENTIK_TOKEN_LDAP
+            securityContext: *sc
+            resources:
+              requests:
+                cpu: 10m
+                memory: 128Mi
+            probes:
+              liveness: &ldap-probe
+                enabled: true
+                custom: true
+                spec: &lps
+                  exec:
+                    command: ["/ldap", "healthcheck"]
+              readiness: *ldap-probe
+              startup:
+                <<: *ldap-probe
+                spec:
+                  <<: [*startup, *lps]
     service:
       authentik:
         controller: authentik
@@ -202,6 +245,29 @@ spec:
             targetPort: *https
             protocol: HTTPS
             appProtocol: https
+      ldap:
+        primary: false
+        controller: ldap
+        type: LoadBalancer
+        annotations:
+          io.cilium/lb-ipam-ips: "192.168.40.13"
+        ports:
+          ldap-tcp: &ldap
+            port: 389
+            targetPort: 3389
+            protocol: TCP
+            appProtocol: ldap
+          ldap-udp:
+            <<: *ldap
+            protocol: UDP
+          ldaps-tcp: &ldaps
+            port: 636
+            targetPort: 6636
+            protocol: TCP
+            appProtocol: ldaps
+          ldaps-udp:
+            <<: *ldaps
+            protocol: UDP
     ingress:
       external: &ingress
         className: external
