@@ -293,12 +293,12 @@ spec:
         globalMounts:
           - subPath: ca.crt
             path: *pgca
-      # tls:
-      #   type: secret
-      #   name: authentik-tls
-      #   defaultMode: 0400
-      #   globalMounts:
-      #     - path: "/certs/auth.kinzoku.dev-k8s"
+      tls:
+        type: secret
+        name: authentik-tls
+        defaultMode: 0400
+        globalMounts:
+          - path: "/certs/auth.kinzoku.dev-k8s"
       tmp:
         type: emptyDir
         medium: Memory
