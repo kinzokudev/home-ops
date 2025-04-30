@@ -225,7 +225,7 @@ spec:
               - <<: *path
                 service:
                   identifier: authentik
-                  port: anubis
+                  port: http
     persistence:
       pg-ca:
         type: secret
