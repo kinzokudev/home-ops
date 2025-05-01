@@ -50,6 +50,26 @@ spec:
         check_for_updates: false
         check_for_plugin_updates: false
         reporting_enabled: false
+      auth:
+        oauth_auto_login: true
+        signout_redirect_url: $__file{/etc/secrets/grafana_auth/GRAFANA_SIGNOUT_REDIRECT_URL}
+      auth.generic_oauth:
+        enabled: true
+        name: "kinzokudev auth"
+        scopes: "openid profile email groups"
+        empty_scopes: false
+        login_attribute_path: preferred_username
+        groups_attribute_path: groups
+        name_attribute_path: name
+        client_id: $__file{/etc/secrets/grafana_auth/GRAFANA_OAUTH_CLIENT_ID}
+        client_secret: $__file{/etc/secrets/grafana_auth/GRAFANA_OAUTH_CLIENT_SECRET}
+        auth_url: $__file{/etc/secrets/grafana_auth/GRAFANA_OAUTH_AUTH_URL}
+        token_url: $__file{/etc/secrets/grafana_auth/GRAFANA_OAUTH_TOKEN_URL}
+        api_url: $__file{/etc/secrets/grafana_auth/GRAFANA_OAUTH_API_URL}
+      auth.generic_oauth.group_mapping:
+        org_id: 1
+        role_attribute_path: |
+          contains(groups[*], 'Role-Grafana-Admin') && 'GrafanaAdmin' || contains(groups[*], 'Role-Grafana-Viewer') && 'Viewer'
       # auth:
       #   oauth_auto_login: true
       #   oauth_allow_insecure_email_lookup: true
@@ -68,11 +88,9 @@ spec:
       #   role_attribute_path: contains(groups[*], 'admins') && 'Admin' || 'Viewer'
       auth.basic:
         enabled: false
+        disable_login_form: true
       auth.anonymous:
-        enabled: true
-        org_id: 1
-        org_name: Main Org.
-        org_role: Viewer
+        enabled: false
       news:
         news_feed_enabled: false
     dashboardProviders:
@@ -81,7 +99,7 @@ spec:
         providers:
           - name: default
             orgId: 1
-            folder: ''
+            folder: ""
             type: file
             disableDeletion: false
             editable: true
@@ -267,7 +285,7 @@ spec:
           gnetId: 22236
           revision: 1
           datasource:
-            - {name: DS_VICTORIAMETRICS, value: Prometheus}
+            - { name: DS_VICTORIAMETRICS, value: Prometheus }
         minio:
           # renovate: depName="MinIO Dashboard"
           gnetId: 13502
@@ -310,7 +328,7 @@ spec:
       datasources:
         enabled: true
         searchNamespace: ALL
-        labelValue: ''
+        labelValue: ""
     plugins:
       - grafana-clock-panel
       - grafana-piechart-panel
@@ -353,4 +371,9 @@ spec:
         secretName: grafana-pg-app
         defaultMode: 0440
         mountPath: /etc/secrets/grafana_pg_app
+        readOnly: true
+      - name: grafana-auth-secret-mount
+        secretName: grafana-auth-secret
+        defaultMode: 0440
+        mountPath: /etc/secrets/grafana_auth
         readOnly: true
