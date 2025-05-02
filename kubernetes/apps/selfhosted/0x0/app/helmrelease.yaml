@@ -36,13 +36,13 @@ spec:
                   key: uri
               FLASK_APP: "fhost"
               APP_PORT: 8080
-              MAX_SIZE: 512
+              MAX_SIZE: 1024
           nginx:
             image:
               repository: ghcr.io/kinzokudev/0x0-nginx
               tag: sha-d2ef5d1@sha256:38f99ad24fddc4d155069461592ed3245f22ab43603470d98bdf3d56fc28719c
             env:
-              MAX_SIZE: "512M"
+              MAX_SIZE: "1024M"
               APP_IP: "127.0.0.1"
     service:
       app:
@@ -56,7 +56,7 @@ spec:
         annotations:
           external-dns.alpha.kubernetes.io/target: external.kinzoku.dev
         hosts:
-          - host: nullpointer.kinzoku.dev
+          - host: 0x0.kinzoku.dev
             paths:
               - path: /
                 service:
