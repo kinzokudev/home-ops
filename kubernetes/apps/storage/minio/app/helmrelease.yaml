@@ -102,6 +102,9 @@ spec:
                 service:
                   identifier: app
                   port: http
+      s3:
+        className: internal
+        hosts:
           - host: s3.kinzoku.dev
             paths:
               - path: /
