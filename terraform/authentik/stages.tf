@@ -11,7 +11,7 @@ resource "authentik_stage_identification" "authentication-identification" {
 
 resource "authentik_stage_password" "authentication-password" {
   name                          = "authentication-password"
-  backend                       = ["authentik.core.auth.InbuiltBackend"]
+  backends                      = ["authentik.core.auth.InbuiltBackend"]
   failed_attempts_before_cancel = 3
 }
 
