@@ -61,20 +61,12 @@ spec:
                 service:
                   identifier: app
                   port: http
-    defaultPodOptions:
-      securityContext:
-        runAsNonRoot: true
-        runAsUser: 3000
-        runAsGroup: 3000
-        fsGroup: 3000
-        fsGroupChangePolicy: OnRootMismatch
-        supplementalGroups: [10000]
-        seccompProfile: { type: RuntimeDefault }
     persistence:
       data:
-        type: nfs
-        server: singularity.internal
-        path: /mnt/data/kube/nullpointer
+        type: persistentVolumeClaim
+        storageClass: openebs-hostpath
+        accessMode: ReadWriteOnce
+        size: 30Gi
         advancedMounts:
           nullpointer:
             app:
