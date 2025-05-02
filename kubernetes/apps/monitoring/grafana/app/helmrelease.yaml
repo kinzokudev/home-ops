@@ -63,10 +63,7 @@ spec:
         auth_url: $__file{/etc/secrets/grafana_auth/GRAFANA_OAUTH_AUTH_URL}
         token_url: $__file{/etc/secrets/grafana_auth/GRAFANA_OAUTH_TOKEN_URL}
         api_url: $__file{/etc/secrets/grafana_auth/GRAFANA_OAUTH_API_URL}
-      auth.generic_oauth.group_mapping:
-        org_id: 1
-        role_attribute_path: |
-          contains(groups[*], 'Role-Grafana-Admin') && 'GrafanaAdmin' || contains(groups[*], 'Role-Grafana-Viewer') && 'Viewer'
+        role_attribute_path: contains(groups[*], 'Grafana Admins') && 'Admin' || contains(groups[*], 'Grafana Editors') && 'Editor' || 'Viewer'
       # auth:
       #   oauth_auto_login: true
       #   oauth_allow_insecure_email_lookup: true
