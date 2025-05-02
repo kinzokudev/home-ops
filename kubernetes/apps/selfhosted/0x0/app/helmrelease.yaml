@@ -27,8 +27,8 @@ spec:
         containers:
           app:
             image:
-              repository: lastradev/0x0
-              tag: latest@sha256:f6076b1bf13cea638ad5b299c347db74b28f4b0e0b969c8dd81ad0eca1b9029d
+              repository: ghcr.io/kinzokudev/0x0-app
+              tag: sha-d2ef5d1@sha256:c9ee68454b54a9992b627f9e4844b97d229a98906034338993fa76a9da1e5194
             env:
               DATABASE_URI:
                 secretKeyRef:
@@ -39,10 +39,11 @@ spec:
               MAX_SIZE: 512
           nginx:
             image:
-              repository: lastradev/0x0-nginx
-              tag: latest@sha256:1ce8fadb0bc72ec2f464751fff18b2592387e1bff2956342a608c73aaba6ac96
+              repository: ghcr.io/kinzokudev/0x0-nginx
+              tag: sha-d2ef5d1@sha256:38f99ad24fddc4d155069461592ed3245f22ab43603470d98bdf3d56fc28719c
             env:
               MAX_SIZE: "512M"
+              APP_IP: "127.0.0.1"
     service:
       app:
         controller: *app
