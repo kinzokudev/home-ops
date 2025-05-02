@@ -11,6 +11,7 @@ spec:
   interval: 1h
   path: ./kubernetes/apps/selfhosted/0x0/app
   components:
+    - ../../../../components/gatus/external
     - ../../../../components/postgres
   prune: true
   retryInterval: 2m
@@ -21,5 +22,6 @@ spec:
   postBuild:
     substitute:
       APP: *app
+      # GATUS_SUBDOMAIN: "0x0"
   targetNamespace: *namespace
   timeout: 5m
