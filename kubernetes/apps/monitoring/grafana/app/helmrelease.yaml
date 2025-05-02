@@ -21,8 +21,7 @@ spec:
     deploymentStrategy:
       type: Recreate
     annotations:
-      configmap.reloader.stakater.com/reload: grafana
-      secret.reloader.stakater.com/reload: grafana-admin-secret
+      reloader.stakater.com/auto: "true"
     replicas: 1
     env:
       GF_DATE_FORMATS_USE_BROWSER_LOCALE: true
