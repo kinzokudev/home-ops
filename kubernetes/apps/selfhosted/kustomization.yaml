@@ -12,3 +12,4 @@ resources:
   - ./convertx/ks.yaml
   - ./discodrome/ks.yaml
   - ./0x0/ks.yaml
+  - ./vikunja/ks.yaml
