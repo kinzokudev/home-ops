@@ -25,3 +25,22 @@ spec:
       GATUS_SUBDOMAIN: "vk"
   targetNamespace: *namespace
   timeout: 5m
+  patches:
+    - target:
+        kind: HelmRelease
+        name: vikunja
+      patch: |-
+        apiVersion: helm.toolkit.fluxcd.io/v2
+        kind: HelmRelease
+        metadata:
+          name: vikunja
+        spec:
+          values:
+            ingress:
+              app:
+                annotations:
+                  gethomepage.dev/enabled: "true"
+                  gethomepage.dev/icon: vikunja.png
+                  gethomepage.dev/name: Vikunja
+                  gethomepage.dev/group: selfhosted
+                  gethomepage.dev/description: To-do app
