@@ -40,7 +40,7 @@ spec:
         spec:
           values:
             ingress:
-              app:
+              external:
                 annotations:
                   gethomepage.dev/enabled: "true"
                   gethomepage.dev/icon: authentik.png
