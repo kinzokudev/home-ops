@@ -27,7 +27,7 @@ locals {
       client_secret = module.onepassword_application["vikunja"].fields["OIDC_SECRET"]
       group         = "monitoring"
       icon_url      = "https://raw.githubusercontent.com/homarr-labs/dashboard-icons/main/png/vikunja.png"
-      redirect_uri  = "https://vk.${var.CLUSTER_DOMAIN}/auth/openid/authentiklogin"
+      redirect_uri  = "https://vk.${var.CLUSTER_DOMAIN}/auth/openid/kinzokudevauth"
       launch_url    = "https://vk.${var.CLUSTER_DOMAIN}"
     }
   }
