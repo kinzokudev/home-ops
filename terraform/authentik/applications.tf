@@ -30,6 +30,14 @@ locals {
       redirect_uri  = "https://vk.${var.CLUSTER_DOMAIN}/auth/openid/kinzokudevauth"
       launch_url    = "https://vk.${var.CLUSTER_DOMAIN}"
     }
+    karakeep = {
+      client_id     = module.onepassword_application["karakeep"].fields["KARAKEEP_OAUTH_CLIENT_ID"]
+      client_secret = module.onepassword_application["karakeep"].fields["KARAKEEP_OAUTH_CLIENT_SECRET"]
+      group         = "monitoring"
+      icon_url      = "https://raw.githubusercontent.com/homarr-labs/dashboard-icons/main/png/karakeep.png"
+      redirect_uri  = "https://keep.${var.CLUSTER_DOMAIN}/api/auth/callback/custom"
+      launch_url    = "https://keep.${var.CLUSTER_DOMAIN}"
+    }
   }
 }
 
