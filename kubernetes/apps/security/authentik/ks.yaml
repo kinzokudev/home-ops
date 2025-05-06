@@ -27,3 +27,22 @@ spec:
     substitute:
       APP: *app
       GATUS_SUBDOMAIN: "auth"
+  patches:
+    - target:
+        kind: HelmRelease
+        name: authentik
+      patch: |-
+        apiVersion: helm.toolkit.fluxcd.io/v2
+        kind: HelmRelease
+        metadata:
+          name: authentik
+        spec:
+          values:
+            ingress:
+              app:
+                annotations:
+                  gethomepage.dev/enabled: "true"
+                  gethomepage.dev/icon: authentik.png
+                  gethomepage.dev/name: Authentik
+                  gethomepage.dev/group: security
+                  gethomepage.dev/description: Identity provider
