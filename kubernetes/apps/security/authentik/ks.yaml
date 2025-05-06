@@ -10,6 +10,7 @@ spec:
     labels:
       app.kubernetes.io/name: *app
   components:
+    - ../../../../components/gatus/external
     - ../../../../components/postgres
   interval: 1h
   path: ./kubernetes/apps/security/authentik/app
@@ -25,3 +26,4 @@ spec:
   postBuild:
     substitute:
       APP: *app
+      GATUS_SUBDOMAIN: "auth"
