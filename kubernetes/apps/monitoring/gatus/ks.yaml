@@ -28,3 +28,22 @@ spec:
     substitute:
       APP: *app
       GATUS_SUBDOMAIN: status
+  patches:
+    - target:
+        kind: HelmRelease
+        name: gatus
+      patch: |-
+        apiVersion: helm.toolkit.fluxcd.io/v2
+        kind: HelmRelease
+        metadata:
+          name: gatus
+        spec:
+          values:
+            ingress:
+              app:
+                annotations:
+                  gethomepage.dev/enabled: "true"
+                  gethomepage.dev/icon: gatus.png
+                  gethomepage.dev/name: Gatus
+                  gethomepage.dev/group: monitoring
+                  gethomepage.dev/description: Status Page
