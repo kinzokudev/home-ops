@@ -25,3 +25,22 @@ spec:
       GATUS_SUBDOMAIN: "0x0"
   targetNamespace: *namespace
   timeout: 5m
+  patches:
+    - target:
+        kind: HelmRelease
+        name: nullpointer
+      patch: |-
+        apiVersion: helm.toolkit.fluxcd.io/v2
+        kind: HelmRelease
+        metadata:
+          name: nullpointer
+        spec:
+          values:
+            ingress:
+              app:
+                annotations:
+                  gethomepage.dev/enabled: "true"
+                  gethomepage.dev/icon: mdi-null
+                  gethomepage.dev/name: "0x0"
+                  gethomepage.dev/group: selfhosted
+                  gethomepage.dev/description: No-bullshit file hosting service
