@@ -13,3 +13,4 @@ resources:
   - ./discodrome/ks.yaml
   - ./0x0/ks.yaml
   - ./vikunja/ks.yaml
+  - ./karakeep/ks.yaml
