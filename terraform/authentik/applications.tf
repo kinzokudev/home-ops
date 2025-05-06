@@ -1,7 +1,8 @@
 locals {
   oauth_apps = [
     "grafana",
-    "vikunja"
+    "vikunja",
+    "karakeep"
   ]
 }
 
