@@ -10,7 +10,7 @@ data:
     endpoints:
       - name: ${APP}-pg
         group: infrastructure
-        url: tcp://${APP}-pg-rw:5432
+        url: tcp://${APP}-pg-rw.${NS}.svc.cluster.local:5432
         interval: 1m
         ui:
           hide-url: true

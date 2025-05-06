@@ -27,6 +27,7 @@ spec:
   postBuild:
     substitute:
       APP: *app
+      NS: *namespace
       GATUS_SUBDOMAIN: status
   patches:
     - target:

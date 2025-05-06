@@ -28,6 +28,7 @@ spec:
   postBuild:
     substitute:
       APP: *app
+      NS: *namespace
   patches:
     - target:
         kind: HelmRelease
