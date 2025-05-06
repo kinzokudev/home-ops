@@ -1,6 +1,7 @@
 locals {
   oauth_apps = [
-    "grafana"
+    "grafana",
+    "vikunja"
   ]
 }
 
@@ -20,6 +21,14 @@ locals {
       icon_url      = "https://raw.githubusercontent.com/homarr-labs/dashboard-icons/main/png/grafana.png"
       redirect_uri  = "https://grafana.${var.CLUSTER_DOMAIN}/login/generic_oauth"
       launch_url    = "https://grafana.${var.CLUSTER_DOMAIN}/login/generic_oauth"
+    }
+    vikunja = {
+      client_id     = module.onepassword_application["vikunja"].fields["OIDC_ID"]
+      client_secret = module.onepassword_application["vikunja"].fields["OIDC_SECRET"]
+      group         = "monitoring"
+      icon_url      = "https://raw.githubusercontent.com/homarr-labs/dashboard-icons/main/png/vikunja.png"
+      redirect_uri  = "https://vk.${var.CLUSTER_DOMAIN}/auth/openid/authentiklogin"
+      launch_url    = "https://vk.${var.CLUSTER_DOMAIN}"
     }
   }
 }
