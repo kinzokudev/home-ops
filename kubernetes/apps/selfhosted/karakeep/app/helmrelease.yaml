@@ -40,6 +40,11 @@ spec:
                   secretKeyRef:
                     name: karakeep-secret
                     key: meilisearch_master_key
+              NEXTAUTH_SECRET:
+                valueFrom:
+                  secretKeyRef:
+                    name: karakeep-secret
+                    key: encryption_key
               NEXTAUTH_URL: https://keep.kinzoku.dev
               DISABLE_NEW_RELEASE_CHECK: true
               COREPACK_INTEGRITY_KEYS: 0
