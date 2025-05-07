@@ -43,7 +43,7 @@ spec:
               tag: 4.4.6@sha256:1a697baca56ab8821783e0ce53eb4fb22e51bb66749ec50581adc0cb6d031d7a
             env:
               TIMEZONE: "America/New_York"
-              DEFAULT_DOMAIN: "https://l.kinzoku.dev"
+              DEFAULT_DOMAIN: "l.kinzoku.dev"
               DISABLE_TRACKING_FROM: 10.0.0.0/8,172.16.0.0/12,192.168.0.0/16
               IS_HTTPS_ENABLED: "true"
               PORT: &port 80
@@ -107,7 +107,7 @@ spec:
               tag: 4.4.0@sha256:99988516ee0caf2059a485edaacab9759db0a3140c5a5c2634e0a97ac4d194bf
             env:
               TIMEZONE: "America/New_York"
-              SHLINK_SERVER_URL: "l.kinzoku.dev"
+              SHLINK_SERVER_URL: "https://l.kinzoku.dev"
               SHLINK_SERVER_API_KEY:
                 valueFrom:
                   secretKeyRef:
