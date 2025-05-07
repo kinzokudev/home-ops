@@ -22,20 +22,6 @@ spec:
       shlink:
         annotations:
           reloader.stakater.com/auto: "true"
-        initContainers:
-          geoip:
-            image:
-              repository: ghcr.io/shlinkio/shlink
-              tag: 4.4.6-roadrunner@sha256:f757d0f668acd9b670ff8b7d07be82e0e1f5446911d5938c4d0de615fc87a03d
-              pullPolicy: IfNotPresent
-            command:
-              - sh
-              - -c
-              - |
-                set -eux
-                cp -a ./vendor/shlinkio/shlink-ip-geolocation/src/GeoLite2/* /geoip
-                sed -i 's|https://download.maxmind.com|http://geoip-download.geoip|' \
-                  /geoip/GeoLite2Options.php
         containers:
           app:
             image:
@@ -50,8 +36,6 @@ spec:
               SHELL_VERBOSITY: 3
               TASK_WORKER_NUM: 4
               WEB_WORKER_NUM: 1
-              GEOLITE_LICENSE_KEY: stub
-              SKIP_INITIAL_GEOLITE_DOWNLOAD: "true"
               DB_DRIVER: postgres
               DB_HOST:
                 valueFrom:
@@ -78,6 +62,11 @@ spec:
                   secretKeyRef:
                     name: &shlsec shlink-secret
                     key: SHLINK_API_KEY
+              GEOLITE_LICENSE_KEY:
+                valueFrom:
+                  secretKeyRef:
+                    name: *shlsec
+                    key: MAXMIND_LICENSE_KEY
             securityContext:
               runAsNonRoot: true
               runAsUser: 1001
@@ -145,20 +134,14 @@ spec:
                   identifier: app
                   port: web
     persistence:
-      tmp:
-        type: emptyDir
-        globalMounts:
-          - path: /tmp
-      tmp-data:
-        type: emptyDir
+      data:
+        type: persistentVolumeClaim
+        storageClass: openebs-hostpath
+        accessMode: ReadWriteOnce
+        size: 5Gi
         globalMounts:
           - path: /etc/shlink/data
-      geolite2:
+      log:
         type: emptyDir
-        advancedMounts:
-          shlink:
-            geoip:
-              - path: /geoip
-            app:
-              - path: /etc/shlink/vendor/shlinkio/shlink-ip-geolocation/src/GeoLite2
-                readOnly: true
+        globalMounts:
+          - path: /etc/shlink/data/log
