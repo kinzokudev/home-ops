@@ -1,0 +1,46 @@
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app navidrome
+  namespace: &namespace media
+spec:
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  interval: 1h
+  components:
+    - ../../../../components/gatus/external
+  path: ./kubernetes/apps/media/navidrome/app
+  prune: true
+  retryInterval: 2m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  postBuild:
+    substitute:
+      APP: *app
+      NS: *namespace
+      GATUS_SUBDOMAIN: "nd"
+  targetNamespace: *namespace
+  timeout: 5m
+  patches:
+    - target:
+        kind: HelmRelease
+        name: navidrome
+      patch: |-
+        apiVersion: helm.toolkit.fluxcd.io/v2
+        kind: HelmRelease
+        metadata:
+          name: navidrome
+        spec:
+          values:
+            ingress:
+              app:
+                annotations:
+                  gethomepage.dev/enabled: "true"
+                  gethomepage.dev/icon: navidrome.png
+                  gethomepage.dev/name: Navidrome
+                  gethomepage.dev/group: selfhosted
+                  gethomepage.dev/description: Music server
