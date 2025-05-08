@@ -28,6 +28,26 @@ resource "authentik_flow_stage_binding" "authentication-flow-binding-100" {
   order  = 100
 }
 
+resource "authentik_flow" "authentication-passwordless" {
+  name               = "authentication-passwordless-flow"
+  title              = "Welcome!"
+  slug               = "authentication-passwordless-flow"
+  designation        = "authentication"
+  policy_engine_mode = "all"
+}
+
+resource "authentik_flow_stage_binding" "authentication-passwordless-flow-binding-00" {
+  target = authentik_flow.authentication-passwordless.uuid
+  stage  = authentik_stage_authenticator_webauthn.authentication-passwordless-webauthn.id
+  order  = 0
+}
+
+resource "authentik_flow_stage_binding" "authentication-passwordless-flow-binding-10" {
+  target = authentik_flow.authentication-passwordless.uuid
+  stage  = authentik_stage_user_login.authentication-passwordless-login.id
+  order  = 10
+}
+
 resource "authentik_flow" "provider-authorization-implicit-consent" {
   name               = "Authorize Application"
   title              = "Redirecting to %(app)s"

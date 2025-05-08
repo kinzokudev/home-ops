@@ -5,6 +5,7 @@ resource "authentik_stage_identification" "authentication-identification" {
   show_source_labels        = true
   show_matched_user         = false
   password_stage            = authentik_stage_password.authentication-password.id
+  passwordless_flow         = authentik_flow.authentication-passwordless.id
   recovery_flow             = authentik_flow.recovery.uuid
   sources                   = [authentik_source_oauth.discord.uuid]
 }
@@ -109,4 +110,12 @@ resource "authentik_stage_prompt" "user-settings" {
 resource "authentik_stage_user_write" "user-settings-write" {
   name                     = "user-settings-write"
   create_users_as_inactive = false
+}
+
+resource "authentik_stage_authenticator_webauthn" "authentication-passwordless-webauthn" {
+  name = "authentication-passwordless-webauthn"
+}
+
+resource "authentik_stage_user_login" "authentication-passwordless-login" {
+  name = "authentication-passwordless-login"
 }
