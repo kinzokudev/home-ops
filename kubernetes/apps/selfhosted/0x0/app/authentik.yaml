@@ -5,7 +5,7 @@ metadata:
   name: authentik-outpost-nullpointer
 spec:
   type: ExternalName
-  externalName: authentik.security.svc.cluster.local
+  externalName: authentik-proxy.security.svc.cluster.local
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -23,7 +23,7 @@ spec:
               service:
                 name: authentik-outpost-nullpointer
                 port:
-                  name: http
+                  number: 9000
   tls:
     - hosts:
         - *host
