@@ -56,7 +56,7 @@ spec:
         annotations:
           external-dns.alpha.kubernetes.io/target: external.kinzoku.dev
           nginx.ingress.kubernetes.io/auth-url: |-
-            http://authentik.security.svc.cluster.local:9000/outpost.goauthentik.io/auth/nginx
+            http://authentik-proxy.security.svc.cluster.local:9000/outpost.goauthentik.io/auth/nginx
           nginx.ingress.kubernetes.io/auth-signin: |-
             https://0x0.kinzoku.dev/outpost.goauthentik.io/start?rd=$scheme://$http_host$escaped_request_uri
           nginx.ingress.kubernetes.io/auth-response-headers: |-
