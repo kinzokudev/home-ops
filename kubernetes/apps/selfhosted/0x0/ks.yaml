@@ -72,3 +72,4 @@ spec:
   postBuild:
     substitute:
       AUTHENTIK_PROXY_HOST: "0x0.kinzoku.dev"
+      INGRESS_CLASS: "external"
