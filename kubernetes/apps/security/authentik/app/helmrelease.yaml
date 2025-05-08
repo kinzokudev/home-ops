@@ -215,6 +215,50 @@ spec:
                 <<: *ldap-probe
                 spec:
                   <<: [*startup, *lps]
+      proxy:
+        type: deployment
+        replicas: 2
+        strategy: RollingUpdate
+        rollingUpdate:
+          unavailable: "90%"
+        pod:
+          topologySpreadConstraints:
+            - <<: *tsc
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: *app
+                  app.kubernetes.io/component: proxy
+        containers:
+          main:
+            image:
+              <<: *img
+              repository: ghcr.io/goauthentik/proxy
+              tag: 2025.2.4@sha256:4de697fbeae74a65526fc1fe4ec9770ebc38d02c7e863c7b0ecb8975003a70d3
+            env:
+              AUTHENTIK_HOST: "https://auth.kinzoku.dev"
+              AUTHENTIK_INSECURE: "true"
+              AUTHENTIK_TOKEN:
+                valueFrom:
+                  secretKeyRef:
+                    name: authentik-tokens-secret
+                    key: AUTHENTIK_TOKEN_PROXY
+            securityContext: *sc
+            resources:
+              requests:
+                cpu: 10m
+                memory: 128Mi
+            probes:
+              liveness: &proxy-probe
+                enabled: true
+                custom: true
+                spec: &pps
+                  exec:
+                    command: ["/proxy", "healthcheck"]
+              readiness: *proxy-probe
+              startup:
+                <<: *proxy-probe
+                spec:
+                  <<: [*startup, *pps]
     service:
       authentik:
         controller: authentik
@@ -269,6 +313,15 @@ spec:
           ldaps-udp:
             <<: *ldaps
             protocol: UDP
+      proxy:
+        primary: false
+        controller: proxy
+        type: LoadBalancer
+        annotations:
+          io.cilium/lb-ipam-ips: "192.168.40.14"
+        ports:
+          proxy:
+            port: 9000
     ingress:
       external: &ingress
         className: external
