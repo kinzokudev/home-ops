@@ -4,6 +4,8 @@ kind: Ingress
 metadata:
   name: ${AUTHENTIK_PROXY_HOST//./-}-authentik
   namespace: security
+  annotations:
+    external-dns.alpha.kubernetes.io/ingress-hostname-source: annotation-only
 spec:
   ingressClassName: "${INGRESS_CLASS:=internal}"
   rules:
