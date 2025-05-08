@@ -5,7 +5,7 @@ resource "authentik_stage_identification" "authentication-identification" {
   show_source_labels        = true
   show_matched_user         = false
   password_stage            = authentik_stage_password.authentication-password.id
-  passwordless_flow         = authentik_flow.authentication-passwordless.id
+  passwordless_flow         = authentik_flow.authentication-passwordless.uuid
   recovery_flow             = authentik_flow.recovery.uuid
   sources                   = [authentik_source_oauth.discord.uuid]
 }
