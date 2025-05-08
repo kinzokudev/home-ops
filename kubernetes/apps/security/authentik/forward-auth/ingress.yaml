@@ -14,9 +14,9 @@ spec:
             path: "/outpost.goauthentik.io"
             backend:
               service:
-                name: authentik
+                name: authentik-proxy
                 port:
-                  name: http
+                  name: proxy
   tls:
     - hosts:
         - *host

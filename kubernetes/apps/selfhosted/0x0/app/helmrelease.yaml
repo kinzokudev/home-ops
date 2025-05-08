@@ -64,12 +64,15 @@ spec:
           nginx.ingress.kubernetes.io/auth-snippet: |
             proxy_set_header X-Forwarded-Host $http_host;
         hosts:
-          - host: 0x0.kinzoku.dev
+          - host: &host 0x0.kinzoku.dev
             paths:
               - path: /
+                pathType: Prefix
                 service:
                   identifier: app
                   port: http
+        tls:
+          - hosts: [*host]
     persistence:
       data:
         type: persistentVolumeClaim
