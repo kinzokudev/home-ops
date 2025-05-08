@@ -26,15 +26,42 @@ spec:
       GATUS_SUBDOMAIN: "l"
   targetNamespace: *namespace
   timeout: 5m
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app shlink-webui
+  namespace: &namespace selfhosted
+spec:
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  interval: 1h
+  components:
+    - ../../../../components/gatus/external
+  path: ./kubernetes/apps/selfhosted/shlink/webui
+  prune: true
+  retryInterval: 2m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  postBuild:
+    substitute:
+      APP: *app
+      NS: *namespace
+      GATUS_SUBDOMAIN: "shlink"
+  targetNamespace: *namespace
+  timeout: 5m
   patches:
     - target:
         kind: HelmRelease
-        name: shlink
+        name: shlink-webui
       patch: |-
         apiVersion: helm.toolkit.fluxcd.io/v2
         kind: HelmRelease
         metadata:
-          name: shlink
+          name: shlink-webui
         spec:
           values:
             ingress:

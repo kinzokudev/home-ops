@@ -32,10 +32,7 @@ spec:
               DEFAULT_DOMAIN: "l.kinzoku.dev"
               DISABLE_TRACKING_FROM: 10.0.0.0/8,172.16.0.0/12,192.168.0.0/16
               IS_HTTPS_ENABLED: "true"
-              PORT: &port 8081
-              SHELL_VERBOSITY: 3
-              TASK_WORKER_NUM: 4
-              WEB_WORKER_NUM: 1
+              PORT: &port 8080
               DB_DRIVER: postgres
               DB_HOST:
                 valueFrom:
@@ -90,26 +87,12 @@ spec:
               requests:
                 cpu: 10m
                 memory: 128Mi
-          web:
-            image:
-              repository: ghcr.io/shlinkio/shlink-web-client
-              tag: 4.4.0@sha256:99988516ee0caf2059a485edaacab9759db0a3140c5a5c2634e0a97ac4d194bf
-            env:
-              TIMEZONE: "America/New_York"
-              SHLINK_SERVER_URL: "https://l.kinzoku.dev"
-              SHLINK_SERVER_API_KEY:
-                valueFrom:
-                  secretKeyRef:
-                    name: *shlsec
-                    key: SHLINK_API_KEY
     service:
       app:
         controller: *app
         ports:
           http:
             port: *port
-          web:
-            port: 8080
     ingress:
       app:
         className: external
@@ -122,17 +105,6 @@ spec:
                 service:
                   identifier: app
                   port: http
-      web:
-        className: external
-        annotations:
-          external-dns.alpha.kubernetes.io/target: external.kinzoku.dev
-        hosts:
-          - host: shlink.kinzoku.dev
-            paths:
-              - path: /
-                service:
-                  identifier: app
-                  port: web
     persistence:
       data:
         type: persistentVolumeClaim
