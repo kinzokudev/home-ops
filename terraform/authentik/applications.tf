@@ -4,6 +4,9 @@ locals {
     "vikunja",
     "karakeep"
   ]
+  proxy_apps = [
+    "nullpointer"
+  ]
 }
 
 module "onepassword_application" {
@@ -40,6 +43,13 @@ locals {
       launch_url    = "https://keep.${var.CLUSTER_DOMAIN}"
     }
   }
+  proxies = {
+    nullpointer = {
+      host_url = "https://0x0.kinzoku.dev"
+      group    = "apps"
+      icon_url = "https://cdn.jsdelivr.net/npm/@mdi/svg@latest/svg/null.svg"
+    }
+  }
 }
 
 resource "authentik_provider_oauth2" "oauth2" {
@@ -71,4 +81,27 @@ resource "authentik_application" "application" {
   meta_icon          = each.value.icon_url
   meta_launch_url    = each.value.launch_url
   policy_engine_mode = "all"
+}
+
+resource "authentik_application" "proxy-application" {
+  for_each           = local.proxies
+  name               = title(each.key)
+  slug               = each.key
+  protocol_provider  = authentik_provider_proxy.proxy[each.key].id
+  group              = authentik_group.default[each.value.group].name
+  open_in_new_tab    = true
+  meta_icon          = each.value.icon_url
+  meta_launch_url    = each.value.host_url
+  policy_engine_mode = "all"
+}
+
+resource "authentik_provider_proxy" "proxy" {
+  for_each              = local.proxies
+  name                  = each.key
+  authorization_flow    = authentik_flow.provider-authorization-implicit-consent.uuid
+  authentication_flow   = authentik_flow.authentication.uuid
+  invalidation_flow     = data.authentik_flow.default-provider-invalidation-flow.id
+  access_token_validity = "hours=4"
+  external_host         = each.value.host_url
+  mode                  = "forward_single"
 }

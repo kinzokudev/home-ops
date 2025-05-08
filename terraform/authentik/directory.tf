@@ -1,6 +1,7 @@
 locals {
   authentik_groups = {
     monitoring = { name = "Monitoring" }
+    apps       = { name = "Apps" }
     users      = { name = "Users" }
   }
 }
@@ -25,6 +26,13 @@ resource "authentik_policy_binding" "application_policy_binding" {
   for_each = local.applications
 
   target = authentik_application.application[each.key].uuid
+  group  = authentik_group.default[each.value.group].id
+  order  = 0
+}
+resource "authentik_policy_binding" "proxy_application_policy_binding" {
+  for_each = local.proxies
+
+  target = authentik_application.proxy-application[each.key].uuid
   group  = authentik_group.default[each.value.group].id
   order  = 0
 }
