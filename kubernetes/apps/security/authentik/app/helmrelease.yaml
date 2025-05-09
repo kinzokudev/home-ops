@@ -237,6 +237,7 @@ spec:
             env:
               AUTHENTIK_HOST: "https://auth.kinzoku.dev"
               AUTHENTIK_INSECURE: "true"
+              AUTHENTIK_LOG_LEVEL: "trace"
               AUTHENTIK_TOKEN:
                 valueFrom:
                   secretKeyRef:
