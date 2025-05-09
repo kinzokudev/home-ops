@@ -5,7 +5,8 @@ locals {
     "karakeep"
   ]
   proxy_apps = [
-    "nullpointer"
+    "nullpointer",
+    "shlink"
   ]
 }
 
@@ -48,6 +49,11 @@ locals {
       host_url = "https://0x0.kinzoku.dev"
       group    = "apps"
       icon_url = "https://cdn.jsdelivr.net/npm/@mdi/svg@latest/svg/null.svg"
+    }
+    shlink = {
+      host_url = "https://shlink.kinzoku.dev"
+      group    = "apps"
+      icon_url = "https://raw.githubusercontent.com/homarr-labs/dashboard-icons/main/png/shlink.png"
     }
   }
 }
