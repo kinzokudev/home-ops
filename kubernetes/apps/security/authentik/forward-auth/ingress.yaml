@@ -18,7 +18,7 @@ spec:
               service:
                 name: authentik-proxy
                 port:
-                  name: proxy
+                  name: proxy-http-tcp
   tls:
     - hosts:
         - *host

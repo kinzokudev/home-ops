@@ -320,8 +320,22 @@ spec:
         annotations:
           io.cilium/lb-ipam-ips: "192.168.40.14"
         ports:
-          proxy:
+          proxy-http-tcp: &proxy
             port: 9000
+            targetPort: 9000
+            protocol: TCP
+            appProtocol: http
+          proxy-http-udp:
+            <<: *proxy
+            protocol: UDP
+          proxy-https-tcp: &proxy-https
+            port: 9443
+            targetPort: 9443
+            protocol: TCP
+            appProtocol: https
+          proxy-https-udp:
+            <<: *proxy-https
+            protocol: UDP
     ingress:
       external: &ingress
         className: external
