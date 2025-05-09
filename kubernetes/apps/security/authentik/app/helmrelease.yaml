@@ -238,6 +238,7 @@ spec:
               AUTHENTIK_HOST: "https://auth.kinzoku.dev"
               AUTHENTIK_INSECURE: "true"
               AUTHENTIK_LOG_LEVEL: "trace"
+              TMPDIR: "/dev/shm"
               AUTHENTIK_TOKEN:
                 valueFrom:
                   secretKeyRef:
