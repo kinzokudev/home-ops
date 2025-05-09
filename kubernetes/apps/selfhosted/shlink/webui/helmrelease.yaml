@@ -51,10 +51,17 @@ spec:
         className: external
         annotations:
           external-dns.alpha.kubernetes.io/target: external.kinzoku.dev
+          nginx.ingress.kubernetes.io/auth-url: |-
+            http://authentik-proxy.security.svc.cluster.local:9000/outpost.goauthentik.io/auth/nginx
+          nginx.ingress.kubernetes.io/auth-signin: |-
+            https://shlink.kinzoku.dev/outpost.goauthentik.io/start?rd=$escaped_request_uri
         hosts:
-          - host: shlink.kinzoku.dev
+          - host: &host shlink.kinzoku.dev
             paths:
               - path: /
+                pathType: Prefix
                 service:
                   identifier: app
                   port: http
+        tls:
+          - hosts: [*host]

@@ -72,3 +72,31 @@ spec:
                   gethomepage.dev/name: Shlink
                   gethomepage.dev/group: selfhosted
                   gethomepage.dev/description: Link shortener
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: authentik-shlink-webui
+  namespace: &ns security
+  labels: &l
+    app.kubernetes.io/name: "shlink-webui"
+spec:
+  interval: 1h
+  prune: true
+  retryInterval: 2m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  timeout: 5m
+  targetNamespace: *ns
+  commonMetadata:
+    labels: *l
+  path: ./kubernetes/apps/security/authentik/forward-auth
+  dependsOn:
+    - name: authentik
+      namespace: security
+  postBuild:
+    substitute:
+      AUTHENTIK_PROXY_HOST: "shlink.kinzoku.dev"
+      INGRESS_CLASS: "external"
