@@ -70,7 +70,7 @@ spec:
               AUTHENTIK_STORAGE__MEDIA__S3__USE_SSL: "true"
               AUTHENTIK_STORAGE__MEDIA__S3__SECURE_URLS: "true"
               AUTHENTIK_LISTEN__TRUSTED_PROXY_CIDRS: "10.42.0.0/16"
-              AUTHENTIK_OUTPUTS__DISCOVER: "false"
+              AUTHENTIK_OUTPOSTS__DISCOVER: "false"
               AUTHENTIK_ERROR_REPORTING__ENABLED: "false"
               AUTHENTIK_ERROR_REPORTING__SEND_PII: "false"
             envFrom: &envFrom
