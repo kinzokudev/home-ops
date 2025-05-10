@@ -44,7 +44,7 @@ spec:
           silence-operator:
             image:
               repository: quay.io/giantswarm/silence-operator
-              tag: 0.13.0
+              tag: 0.14.1@sha256:1993039683053e33776bed8014a6d5c9d6824b1f31d33101acc0cd3d243c32d8
             args:
               - daemon
               - --config.dirs=/var/run/silence-operator/configmap/
