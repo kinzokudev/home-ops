@@ -19,7 +19,7 @@ spec:
       retries: 3
   values:
     controllers:
-      shlink:
+      shlink-webui:
         annotations:
           reloader.stakater.com/auto: "true"
         containers:
@@ -42,7 +42,7 @@ spec:
                 memory: 128Mi
     service:
       app:
-        controller: shlink
+        controller: *app
         ports:
           http:
             port: 8080
