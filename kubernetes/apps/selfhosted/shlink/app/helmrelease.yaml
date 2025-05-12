@@ -33,6 +33,8 @@ spec:
               IS_HTTPS_ENABLED: "true"
               PORT: &port 8080
               DB_DRIVER: postgres
+              WEB_WORKER_NUM: "4"
+              TASK_WORKER_NUM: "4"
               DB_HOST:
                 valueFrom:
                   secretKeyRef:
