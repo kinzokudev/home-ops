@@ -30,7 +30,6 @@ spec:
             env:
               TIMEZONE: "America/New_York"
               DEFAULT_DOMAIN: "l.kinzoku.dev"
-              DISABLE_TRACKING_FROM: 10.0.0.0/8,172.16.0.0/12,192.168.0.0/16
               IS_HTTPS_ENABLED: "true"
               PORT: &port 8080
               DB_DRIVER: postgres
