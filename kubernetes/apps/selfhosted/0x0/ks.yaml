@@ -45,31 +45,3 @@ spec:
                   gethomepage.dev/name: "0x0"
                   gethomepage.dev/group: selfhosted
                   gethomepage.dev/description: No-bullshit file hosting service
----
-apiVersion: kustomize.toolkit.fluxcd.io/v1
-kind: Kustomization
-metadata:
-  name: authentik-nullpointer
-  namespace: &ns security
-  labels: &l
-    app.kubernetes.io/name: "nullpointer"
-spec:
-  interval: 1h
-  prune: true
-  retryInterval: 2m
-  sourceRef:
-    kind: GitRepository
-    name: flux-system
-    namespace: flux-system
-  timeout: 5m
-  targetNamespace: *ns
-  commonMetadata:
-    labels: *l
-  path: ./kubernetes/apps/security/authentik/forward-auth
-  dependsOn:
-    - name: authentik
-      namespace: security
-  postBuild:
-    substitute:
-      AUTHENTIK_PROXY_HOST: "0x0.kinzoku.dev"
-      INGRESS_CLASS: "external"
