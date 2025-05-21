@@ -10,7 +10,7 @@ spec:
     mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
     operation: copy
   ref:
-    tag: 6.28.0
+    tag: 6.30.0@sha256:b88768e98fd993e44b28d305e84cc8e5cf0f396c5f0e2229629aa59b7845b7e7
   url: oci://ghcr.io/home-operations/charts-mirror/loki
   verify:
     provider: cosign
