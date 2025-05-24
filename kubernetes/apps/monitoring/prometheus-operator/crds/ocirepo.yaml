@@ -10,5 +10,5 @@ spec:
     mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
     operation: copy
   ref:
-    tag: 19.0.0
+    tag: 19.1.0@sha256:a7be221e7c22de8d069e603ab23e08555eb65727a60c27bcab5d64cfe69c86e0
   url: oci://ghcr.io/prometheus-community/charts/prometheus-operator-crds
