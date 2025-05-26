@@ -11,7 +11,7 @@ spec:
     operation: copy
   url: oci://ghcr.io/coredns/charts/coredns
   ref:
-    tag: 1.39.1
+    tag: 1.42.2@sha256:5664f2d124419897058a0bd7a09f80efb3e84449745d5d194856f848e4cbed74
   verify:
     provider: cosign
 ---
