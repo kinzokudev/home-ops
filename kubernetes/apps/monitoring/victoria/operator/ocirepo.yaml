@@ -9,5 +9,5 @@ spec:
     mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
     operation: copy
   ref:
-    tag: 0.45.0
+    tag: 0.49.1@sha256:37beb331aab9dfb2b968d016dfa8a3a711372b2fcd4cfceefb64ed4503e35a26
   url: oci://ghcr.io/victoriametrics/helm-charts/victoria-metrics-operator
