@@ -10,5 +10,5 @@ spec:
     mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
     operation: copy
   ref:
-    tag: 6.16.6
+    tag: 6.17.0@sha256:5f59996ecf2ae87d02e7db7d26d1eefa96fbfadeb6ca4fa4b02f9c134a35417f
   url: oci://ghcr.io/grafana/helm-charts/promtail
