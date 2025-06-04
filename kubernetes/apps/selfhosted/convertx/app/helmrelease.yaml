@@ -28,7 +28,7 @@ spec:
           app:
             image:
               repository: ghcr.io/c4illin/convertx
-              tag: v0.12.1@sha256:d54b3deb00f990d90ccd18b5340d9ba91da209e5d8ccc670203f5dd342acf672
+              tag: v0.14.1@sha256:346589f154332997329fdc888417d4b24c49cc9140eab80e637a68cfbdd8041b
             envFrom:
               - secretRef:
                   name: convertx-secret
