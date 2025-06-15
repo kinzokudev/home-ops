@@ -9,7 +9,7 @@ spec:
     mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
     operation: copy
   ref:
-    tag: 4.2.0
+    tag: 4.3.0@sha256:f74c29c14b163e32ced6399cd463a7b9392a3a2b21ffb0db87fc6ed4b011b1b1
   url: oci://ghcr.io/home-operations/charts-mirror/openebs
   verify:
     provider: cosign
