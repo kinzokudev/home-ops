@@ -233,7 +233,7 @@ spec:
             image:
               <<: *img
               repository: ghcr.io/goauthentik/proxy
-              tag: 2025.2.4@sha256:4de697fbeae74a65526fc1fe4ec9770ebc38d02c7e863c7b0ecb8975003a70d3
+              tag: 2025.6.2@sha256:28b0c3cb55ad82f08b9c0a32854fac0b7bd347149c57a1b1dc9ecdb88a72d6c9
             env:
               AUTHENTIK_HOST: "https://auth.kinzoku.dev"
               AUTHENTIK_INSECURE: "true"
