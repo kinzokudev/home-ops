@@ -10,7 +10,7 @@ spec:
     mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
     operation: copy
   ref:
-    tag: 1.16.0
+    tag: 1.17.0@sha256:efecc72099613c03fd5e7eab5eb2b2950d770ab5b6e2deafa3b7154ba4c487b4
   url: oci://ghcr.io/home-operations/charts-mirror/external-dns
   verify:
     provider: cosign
