@@ -189,7 +189,7 @@ spec:
             image:
               <<: *img
               repository: ghcr.io/goauthentik/ldap
-              tag: 2025.2.4@sha256:cc98bc43e3713095097ae322df1ebd3b0ae76ecd0bd67ae7cd1e0375cce51b1b
+              tag: 2025.6.3@sha256:28831ab95e4f05df683fd7032df6ac6beb3fa0647172bcc9b13b99869d7ee821
             env:
               AUTHENTIK_HOST: "https://auth.kinzoku.dev"
               AUTHENTIK_INSECURE: "true"
