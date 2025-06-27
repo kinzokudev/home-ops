@@ -49,7 +49,7 @@ spec:
           rclone-b2: &rclone
             image: &rcimg
               repository: "jank.ing/jjgadgets/rclone"
-              tag: "1.69.0@sha256:cb11048380b069916542e041e28385ca4f4fd7df54f29d59fa79dc142f49852e"
+              tag: "1.70.2@sha256:b8dad82933961be28ebbe4aab87e14f2d2fcd23ed3e8335a43a837209cb46f5f"
             args:
               [
                 "sync",
