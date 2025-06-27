@@ -33,7 +33,7 @@ spec:
           main:
             image: &img
               repository: ghcr.io/goauthentik/server
-              tag: 2025.2.4@sha256:36233579415aa2e2e52a6b0c45736cb871fe71460bfe0cf95d83f67528fb1182
+              tag: 2025.6.3@sha256:334354d11e015037cc1b030a9710e564f6e3545369d28789db823e86171d3fdc
             args: [server]
             env: &env
               TZ: America/New_York
