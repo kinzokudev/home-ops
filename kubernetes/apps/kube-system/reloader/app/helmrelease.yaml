@@ -10,7 +10,7 @@ spec:
     mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
     operation: copy
   ref:
-    tag: 2.0.0
+    tag: 2.1.5@sha256:3d52327df84d34762086e3023245f2e8b83b7c03584aa3acb59ef73fcc2d3962
   url: oci://ghcr.io/stakater/charts/reloader
 ---
 # yaml-language-server: $schema=https://raw.githubusercontent.com/fluxcd-community/flux2-schemas/main/helmrelease-helm-v2.json
